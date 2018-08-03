@@ -130,12 +130,6 @@ class ClippedDrawer extends Component {
               </ListItemIcon>
               <ListItemText primary="Categorias" />
             </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <SendIcon />
-              </ListItemIcon>
-              <ListItemText primary="Subcategorias" />
-            </ListItem>
             <ListItem button onClick={this.handleProductsClick}>
               <ListItemIcon>
                 <ProductList />
