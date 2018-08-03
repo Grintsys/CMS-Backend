@@ -76,3 +76,15 @@ require("./ProductAttributesValue")(app, sql, sqlConfig);
 require("./Company")(app, sql, sqlConfig);
 require("./CoverPage")(app, sql, sqlConfig, upload);
 require("./User")(app, sql, sqlConfig);
+
+process.on('SIGINT', () => {
+    console.info('SIGINT signal received.')
+  
+    // Stops the server from accepting new connections and finishes existing connections.
+    server.close(function(err) {
+      if (err) {
+        console.error(err)
+        process.exit(1)
+      }
+    })
+  })
