@@ -150,9 +150,11 @@ module.exports = function(app, sql, sqlConfig, upload){
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
 
+                var limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 12;
+
                 var request = pool.request();
                 
-                var queryText = `select a.ProductId,
+                var queryText = `select top ${limit} a.ProductId,
                 a.PartNumber,
                 a.ImageUrl,
                 a.Price,
@@ -171,20 +173,89 @@ module.exports = function(app, sql, sqlConfig, upload){
             where a.IsActive = 1`;
 
                 request.query(queryText, (err, recordset) => {
-                            if(err) console.log(err);
-
-                            var data = {
-                                success: true,
-                                message: '',
-                                data: recordset.recordset
-                            }
-
-                            res.send(data);
+                    if(err) {
+                        console.log(err);                               
+                        var data = {
+                            success: false,
+                            message: err,
+                        }
+                        res.send(data);
+                    } else {
+                        var data = {
+                            success: true,
+                            message: '',
+                            data: recordset.recordset
+                        }
+                        res.send(data);
+                    }
                 })
         });
         
         pool.on('error', err => {
             res.send({error: err, success:false});
+        });
+    })
+
+    app.get('/product/search/:keyword', function(req, res){
+        console.log(`${new Date()} search products`);
+        const pool = new sql.ConnectionPool(sqlConfig, err => {
+                if(err) console.log(err);
+
+                var keyword = req.params.keyword;
+                var limit = parseInt(req.query.limit) > 0 ? parseInt(req.query.limit) : 12;
+
+                var request = pool.request();
+                
+                var queryText = 
+                `select top ${limit} a.ProductId,
+                a.PartNumber,
+                a.ImageUrl,
+                a.Price,
+                a.[Qty],
+                a.[Name],
+                a.[Description],
+                b.[Name] Subcategory,
+                a.SubCategoryId,
+                c.[Name] Category,
+                d.[Name] Brand,
+                a.BrandId
+            from dbo.Products a
+                 left join dbo.Subcategories b on a.SubCategoryId = b.SubCategoryId
+                 left join dbo.Categories c on c.CategoryId = b.CategoryId
+                 left join dbo.Brands d on d.BrandId = a.BrandId
+           where a.IsActive = 1
+	     	 and (a.PartNumber like '%${keyword}%' 
+			  or a.[Name] like '%${keyword}%'
+			  or a.[Description] like '%${keyword}%'
+			  or b.[Name] like '%${keyword}%'
+			  or c.[Name] like '%${keyword}%'
+			  or d.[Name] like '%${keyword}%')`;
+
+                request.query(queryText, (err, recordset) => {
+                            if(err) {
+                                console.log(err);                               
+                                var data = {
+                                    success: false,
+                                    message: err,
+                                }
+                                res.send(data);
+                            } else {
+                                var data = {
+                                    success: true,
+                                    message: '',
+                                    data: recordset.recordset
+                                }
+                                res.send(data);
+                            }
+                })
+        });
+        
+        pool.on('error', err => {
+            var data = {
+                success: false,
+                message: err,
+            }
+            res.send(data);
         });
     })
 
