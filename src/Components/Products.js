@@ -23,6 +23,9 @@ import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import axios from 'axios';
+import { MySnackbarContentWrapper } from './SnackBarCustom'
+import Snackbar from '@material-ui/core/Snackbar'
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const styles = theme => ({
   root: {
@@ -60,6 +63,9 @@ const styles = theme => ({
     marginRight: theme.spacing.unit,
     //width: 200,
   },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
 });
 
 class ProductList extends React.Component {
@@ -70,18 +76,21 @@ class ProductList extends React.Component {
       add: false,
       edit: false,
       remove: false,
+      succes: false,
+      loading: false,
+      message: '',
+      openMessage: false,
+      showProgress: false,
+      ProductId: -1,
+      Name: '',
+      Description: '',
+      PartNumber: '',
+      Qty: 0,
+      Price: 0,
+      SubCategoryId: 1,
+      BrandId: 1, 
+      File: [],
       products: [],
-      product: {
-        ProductId: -1,
-        Name: '',
-        Description: '',
-        PartNumber: '',
-        Qty: 0,
-        Price: 0,
-        SubCategory: 1,
-        BrandId: 1, 
-        File: []
-      },
       product_default: {
         ProductId: -1,
         Name: '',
@@ -89,33 +98,50 @@ class ProductList extends React.Component {
         PartNumber: '',
         Qty: 0,
         Price: 0,
-        SubCategory: 1,
+        SubCategoryId: 1,
         BrandId: 1, 
         File: []
       },
     };
   }
 
+  setProduct = (product) => {
+    this.setState({
+        ProductId: product.ProductId,
+        Name: product.Name,
+        Description: product.Description,
+        PartNumber: product.PartNumber,
+        Qty: product.Qty,
+        Price: product.Price,
+        SubCategoryId: product.SubCategoryId,
+        BrandId: product.BrandId
+    })
+  }
+
   onClickAddHandler = () => {
+
+    this.setProduct(this.state.product_default);
+
     this.setState({
       add: true,
     })
   }
 
   onClickEditHandler = (product) => {
+
+    this.setProduct(product);
+
     this.setState({
       edit: true,
-      product: product
     })
   }
 
   onClickRemoveHandler = (product) => {
-    let p = this.state.product;
-    p.ProductId = product.ProductId;
+
+    this.setProduct(product);
 
     this.setState({
       remove: true,
-      product: p,
     })
   }
 
@@ -127,78 +153,31 @@ class ProductList extends React.Component {
     })
   }
 
-  onProductIdChangeHandle = (event) => {
-      let p = this.state.product;
-      p.ProductId = event.target.value;
-      this.setState({
-        product: p,
-      })
-  }
+  handleInputChange = (event) => {
+    const target = event.target;
+    const value = target.type === 'file' ? target.files[0] : target.value;
+    const name = target.name;
 
-  onProductNameChangeHandle = (event) => {
-    let p = this.state.product;
-    p.Name = event.target.value;
     this.setState({
-      product: p,
-    })
-  }
-
-  onProductDescriptionChangeHandle = (event) => {
-    let p = this.state.product;
-    p.Description = event.target.value;
-    this.setState({
-      product: p,
-    })
-  }
-
-  onProductPartNumberChangeHandle = (event) => {
-    let p = this.state.product;
-    p.PartNumber = event.target.value;
-    this.setState({
-      product: p,
-    })
-  }
-
-  onProductQuantityChangeHandle = (event) => {
-    let p = this.state.product;
-    p.Qty = event.target.value;
-    this.setState({
-      product: p,
-    })
-  }
-
-  onProductPriceChangeHandle = (event) => {
-    let p = this.state.product;
-    p.Price = event.target.value;
-    this.setState({
-      product: p,
-    })
-  }
-
-  onProductFileChangeHandle = (event) => {
-    let p = this.state.product;
-    p.File = event.target.files[0];
-    this.setState({
-      product: p,
-    })
+      [name]: value
+    });
   }
 
   onClickAddSubmitHandler = (event) => {
-
     event.preventDefault();
 
-    var data = new FormData();
-    let p = this.state.product;
-    console.log(p);
+    this.setState({ loading: true });
 
-    data.append('Name', p.Name);
-    data.append('Description', p.Description);
-    data.append('PartNumber', p.PartNumber);
-    data.append('SubCategoryId', p.SubCategoryId);
-    data.append('BrandId', p.BrandId);
-    data.append('Price', p.Price);
-    data.append('Qty', p.Qty);
-    data.append('file', p.File);
+    var data = new FormData();
+
+    data.append('Name', this.state.Name);
+    data.append('Description', this.state.Description);
+    data.append('PartNumber', this.state.PartNumber);
+    data.append('SubCategoryId', this.state.SubCategoryId);
+    data.append('BrandId', this.state.BrandId);
+    data.append('Price', this.state.Price);
+    data.append('Qty', this.state.Qty);
+    data.append('file', this.state.File);
     
     axios({
         method: 'POST',
@@ -208,32 +187,41 @@ class ProductList extends React.Component {
             headers: {'Content-Type': 'multipart/form-data' }
           },
       })
-   .then(function (response) {
+   .then( res => {
         //TODO add dom object to grid list
-        console.log(response);
+        this.setState({
+          success: res.data.success,
+          message: res.data.message,  
+          add: false,
+          openMessage: true,
+          loading: false,
+          product: this.state.product_default,
+      });
    })
    .catch(function (error) {
         console.log(error);
    });
 
-   this.setState({ add: false, product: this.state.product_default });
+   this.getProductList();
   }
 
   onClickEditSubmitHandler = (event) => {
     event.preventDefault();
 
-    var data = new FormData();
-    let p = this.state.product;
+    this.setState({ loading: true });
 
-    data.append('ProductId', p.ProductId)
-    data.append('Name', p.Name);
-    data.append('Description', p.Description);
-    data.append('PartNumber', p.PartNumber);
-    data.append('SubCategoryId', p.SubCategoryId);
-    data.append('BrandId', p.BrandId);
-    data.append('Price', p.Price);
-    data.append('Qty', p.Qty);
-    data.append('file', p.File);
+    //debugger;
+    var data = new FormData();
+
+    data.append('ProductId', this.state.ProductId)
+    data.append('Name', this.state.Name);
+    data.append('Description', this.state.Description);
+    data.append('PartNumber', this.state.PartNumber);
+    data.append('SubCategoryId', this.state.SubCategoryId);
+    data.append('BrandId', this.state.BrandId);
+    data.append('Price', this.state.Price);
+    data.append('Qty', this.state.Qty);
+    data.append('file', this.state.File);
     
     axios({
         method: 'POST',
@@ -243,37 +231,48 @@ class ProductList extends React.Component {
             headers: {'Content-Type': 'multipart/form-data' }
           },
       })
-   .then(function (response) {
-        //TODO add dom object to grid list
-        console.log(response);
-   })
-   .catch(function (error) {
+   .then(res => {
+      console.log(res);
+      this.setState({
+          success: res.data.success,
+          message: res.data.message,  
+          openMessage: true,
+          edit: false,
+          loading: false
+      });
+    })
+    .catch(function (error) {
         console.log(error);
-   });
+    });
+
+    this.getProductList();
   }
 
   onClickRemoveSubmitHandler = (event) => {
     event.preventDefault();
 
-    var p = this.state.product;
-    var url = `${Config.API}product/remove/${p.ProductId}`;
-    console.log(url);
+    this.setState({ loading: true });
+
+    var url = `${Config.API}product/remove/${this.state.ProductId}`;
+
     axios.get(url)
-    .then(function (response) {
-      //TODO remove dom object to grid list
-      console.log(response);
+    .then(res => {
+        this.setState({
+          success: res.data.success,
+          message: res.data.message,  
+          remove: false,
+          openMessage: true,
+          loading: false,
+      });
     })
     .catch(function (error) {
        console.log(error);
     });
 
-    this.setState({
-      remove: false
-    })
+    this.getProductList();
   }
 
-  componentDidMount()
-  {
+  getProductList = () => {
     const { classes } = this.props;
     fetch(Config.API+'product/all')
     .then(result => {
@@ -308,11 +307,18 @@ class ProductList extends React.Component {
                 </Card>
               )
         })
-            this.setState({ products: products })
-        })
+        
+        this.setState({ products: products })
+    })
+  }
+
+  componentDidMount()
+  {
+      this.getProductList();
   }
 
   render(){
+      const { loading } = this.state;
       const { classes } = this.props;
       return (
         <div className={classes.root}>
@@ -330,13 +336,12 @@ class ProductList extends React.Component {
                   <DialogTitle id="form-dialog-title">Agregar Producto</DialogTitle>
                     <form onSubmit={this.onClickAddSubmitHandler}>
                       <DialogContent> 
-                        <TextField autoFocus margin="dense" id="name" name="name" label="Nombre" type="text" value={this.state.product.Name} onChange={this.onProductNameChangeHandle} fullWidth />
-                        <TextField autoFocus margin="dense" id="descripcion" name="description" label="Descripcion de producto" required value={this.state.product.Description} onChange={this.onProductDescriptionChangeHandle} multiline fullWidth />     
-                        <TextField autoFocus margin="dense" id="partnumber" name="partnumber" label="No Parte" type="text" value={this.state.product.PartNumber} onChange={this.onProductPartNumberChangeHandle} fullWidth />
-                        <TextField autoFocus margin="dense" id="qty" name="qty" label="Cantidad" type="number"  value={this.state.product.Qty} onChange={this.onProductQuantityChangeHandle} fullWidth />
-                        <TextField autoFocus margin="dense" id="price" name="price" label="Precio" type="number" value={this.state.product.Price} onChange={this.onProductPriceChangeHandle} fullWidth />     
-                        <TextField autoFocus margin="dense" id="file" name="file" label="Imagen" type="file" onChange={this.onProductFileChangeHandle} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Description" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline fullWidth />     
+                        <TextField autoFocus margin="dense" required name="PartNumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} fullWidth />    
+                        <TextField autoFocus margin="dense" required name="File" label="Imagen" type="file" onChange={this.handleInputChange} fullWidth />
                       </DialogContent>
+                      {loading && <LinearProgress />}
                       <DialogActions>
                         <Button onClick={this.onClickCloseHandle} color="primary">Cancelar</Button>
                         <Button type="submit" color="primary">Guardar</Button>
@@ -350,13 +355,14 @@ class ProductList extends React.Component {
                   <DialogTitle id="form-dialog-title">Editar producto</DialogTitle>
                     <form onSubmit={this.onClickEditSubmitHandler}>
                       <DialogContent> 
-                        <TextField autoFocus margin="dense" id="name" name="name" label="Nombre" type="text" value={this.state.product.Name} onChange={this.onProductNameChangeHandle} fullWidth />
-                        <TextField autoFocus margin="dense" id="descripcion" name="description" margin="normal" label="Descripcion de producto" required value={this.state.product.Description} onChange={this.onProductDescriptionChangeHandle} multiline fullWidth />     
-                        <TextField autoFocus margin="dense" id="partnumber" name="partnumber" label="No Parte" type="text" value={this.state.product.PartNumber} onChange={this.onProductPartNumberChangeHandle} fullWidth />
-                        <TextField autoFocus margin="dense" id="qty" name="qty" label="Cantidad" type="number"  value={this.state.product.Qty} onChange={this.onProductQuantityChangeHandle} fullWidth />
-                        <TextField autoFocus margin="dense" id="price" name="price" label="Precio" type="number" value={this.state.product.Price} onChange={this.onProductPriceChangeHandle} fullWidth />     
-                        <TextField autoFocus margin="dense" id="file" name="file" label="Imagen" type="file" onChange={this.onProductFileChangeHandle} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Description" margin="normal" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline fullWidth />     
+                        <TextField autoFocus margin="dense" required name="Partnumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Qty" label="Cantidad" type="number"  value={this.state.Qty} onChange={this.handleInputChange} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Price" label="Precio" type="number" value={this.state.Price} onChange={this.handleInputChange} fullWidth />     
+                        <TextField autoFocus margin="dense" required name="File" label="Imagen" type="file" onChange={this.handleInputChange} fullWidth />
                       </DialogContent>
+                      {loading && <LinearProgress />}
                       <DialogActions>
                         <Button onClick={this.onClickCloseHandle} color="primary">Cancelar</Button>
                         <Button type="submit" color="primary">Guardar</Button>
@@ -371,10 +377,11 @@ class ProductList extends React.Component {
                     <form onSubmit={this.onClickRemoveSubmitHandler}>
                       <DialogContent> 
                       <DialogContentText id="alert-dialog-description">
-                        Esta seguro que desea eliminar el producto con ID: {this.state.product.ProductId}
+                        Esta seguro que desea eliminar el producto: {this.state.Name}
                       </DialogContentText>
-                        <TextField id="id" name="id" type="hidden" value={this.state.product.ProductId} />                
+                        <TextField id="id" name="id" type="hidden" value={this.state.ProductId} />                
                       </DialogContent>
+                        {loading && <LinearProgress />}
                       <DialogActions>
                         <Button onClick={this.onClickCloseHandle} color="primary">Cancelar</Button>
                         <Button type="submit" color="primary">Guardar</Button>
@@ -382,6 +389,22 @@ class ProductList extends React.Component {
                     </form>
               </Dialog>
             </div>
+            <div>
+              <Snackbar
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                open={this.state.openMessage}
+                autoHideDuration={6000}
+                onClose={this.onClickCloseHandle}>
+              <MySnackbarContentWrapper
+                  onClose={this.onClickCloseHandle}
+                  variant="success"
+                  message={this.state.message}
+              />
+              </Snackbar>
+            </div>  
         </div>
       );
   }
