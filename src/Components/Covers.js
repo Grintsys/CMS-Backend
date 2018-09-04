@@ -180,6 +180,8 @@ class Covers extends React.Component {
        .catch(error => {
             console.log(error);
        });
+
+       this.getCoverList();
   }
 
   onClickEditSubmitHandler = (event) => {
@@ -208,12 +210,14 @@ class Covers extends React.Component {
        .catch(error => {
             console.log(error);
        });
+
+       this.getCoverList();
   }
 
   onClickRemoveSubmitHandler = (event) => {
     event.preventDefault();
 
-    var url = `${Config.API}cover/remove/${this.state.FrontCoverPageId}`;
+    var url = `${Config.API}coverpage/remove/${this.state.FrontCoverPageId}`;
     console.log(url);
     axios.get(url)
     .then(res => {
@@ -227,10 +231,16 @@ class Covers extends React.Component {
     .catch(function (error) {
        console.log(error);
     });
+
+    this.getCoverList();
   }
 
   componentDidMount()
   {
+    this.getCoverList();
+  }
+
+  getCoverList(){
     const { classes } = this.props;
     fetch(Config.API+'coverpage/all')
     .then(result => {
@@ -266,7 +276,7 @@ class Covers extends React.Component {
               )
         })
             this.setState({ covers: covers })
-        })
+    })
   }
 
   render() {
