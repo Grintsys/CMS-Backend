@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^1.4.0",
@@ -13,7 +13,6 @@
     "react-scripts": "1.1.4"
   },
   "scripts": {
-    "api": "cd API && npm start",
     "start": "react-scripts start",
     "start:production": "npm run build && npm run start:prod",
     "start:prod": "NODE_ENV=production node server",

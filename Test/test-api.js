@@ -2,7 +2,7 @@ process.env.NODE_ENV = 'test';
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let should = chai.should();
+const expect = require('chai').expect;
 let server = 'http://localhost:8090';
 
 chai.use(chaiHttp);
@@ -10,12 +10,40 @@ chai.use(chaiHttp);
 describe('Products', () => {
     describe('/GET products', () => {
         it('it should GET all the products', (done) => {
-          chai.request('http://localhost:8090')
+          chai.request(server)
               .get('/product/all')
               .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('array');
-                    res.body.length.should.be.eql(0);
+                    expect(res).to.have.status(200);
+                    expect(res).to.be.json;
+                    expect(res.body).to.be.an('object');
+                    expect(res.body.success).to.be.eq(true);
+                    expect(res.body.data).to.be.an('array');
+                done();
+              });
+        });
+    });
+
+    describe('/POST products', () => {
+        it('it should POST a new product', (done) => {
+          chai.request(server)
+              .post('/product/add')
+              .type('form')
+              .send({
+                    SubCategoryId: 1,
+                    BrandId: 1,
+                    PartNumber: 123,
+                    Name: 'Prueba producto',
+                    Description: 'Prueba descripcion',
+                    Qty: 0,
+                    Price: 0,
+                    file: ''
+               })
+              .end((err, res) => {
+                    expect(res).to.have.status(200);
+                    expect(res).to.be.json;
+                    expect(res.body).to.be.an('object');
+                    expect(res.body.success).to.be.eq(true);
+                    expect(res.body.data).to.be.an('array');
                 done();
               });
         });

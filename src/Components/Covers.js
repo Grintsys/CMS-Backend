@@ -129,10 +129,10 @@ class Covers extends React.Component {
     })
   }
 
-  onClickRemoveHandler = (id) => {
+  onClickRemoveHandler = (cover) => {
     this.setState({
       remove: true,
-      FrontCoverPageId: id
+      FrontCoverPageId: cover.FrontCoverPageId
     })
   }
 
@@ -217,15 +217,18 @@ class Covers extends React.Component {
   onClickRemoveSubmitHandler = (event) => {
     event.preventDefault();
 
+    debugger;
+
     var url = `${Config.API}coverpage/remove/${this.state.FrontCoverPageId}`;
-    console.log(url);
+    //console.log(url);
     axios.get(url)
     .then(res => {
         this.setState({
           success: res.data.success,
           message: res.data.message,  
           openMessage: true,
-          remove: false
+          remove: false,
+          loading: false,
         })
     })
     .catch(function (error) {

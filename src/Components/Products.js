@@ -274,7 +274,7 @@ class ProductList extends React.Component {
 
   getProductList = () => {
     const { classes } = this.props;
-    fetch(Config.API+'product/all')
+    fetch(Config.API+'product/all?limit=1000')
     .then(result => {
         return result.json();
     })
