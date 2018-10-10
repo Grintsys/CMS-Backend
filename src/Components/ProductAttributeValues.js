@@ -22,16 +22,22 @@ import Button from '@material-ui/core/Button';
 import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
-
+import MenuItem from '@material-ui/core/MenuItem'
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import MenuIcon from '@material-ui/icons/Menu';
+import { Link } from 'react-router-dom';
+import BackIcon from '@material-ui/icons/ArrowBack'
 
 const styles = theme => ({
   root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    //justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
-  },  
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginLeft: -18,
+    marginRight: 10,
+  }, 
   listSection: {
     backgroundColor: 'inherit',
   },
@@ -39,22 +45,34 @@ const styles = theme => ({
     position: 'absolute',
     right: theme.spacing.unit * 4,
   },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+  dense: {
+    marginTop: 16,
+  },
+  menu: {
+    width: 200,
+  },
 });
 
 
-class SimpleGridList extends React.Component {
+class ProductAttributesValuesGridList extends React.Component {
 
   constructor(){
       super();
       this.state = {
           elements: [],
+          attributes: [],
+          attrubute: '',
           edit: false,
           add: false,
           remove: false,
           success: false,
           loading: false,
           message: '',
-          name: '',
+          value: '',
           id: -1,
           openMessage: false,
       }
@@ -97,7 +115,11 @@ class SimpleGridList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattribute/add/${this.state.name}`;
+    const { id } = this.props.match.params;
+
+    var url = `${Config.API}productattributevalue/add/${id}.${this.state.attribute}.${this.state.value}`;
+
+    debugger;
 
     axios.get(url)
     .then(res => {
@@ -116,54 +138,24 @@ class SimpleGridList extends React.Component {
     });
   }
 
-  handleNameChange = (event) => {
+  handleValueChange = (event) => {
     this.setState({
-        name: event.target.value
+        value: event.target.value
     })
   }
 
-  onClickEditSubmitHandler = (event) =>{
-    event.preventDefault();
-
-    this.setState({ loading: true });
-
-    var data = new FormData();
-    data.append('id', this.state.id);
-    data.append('name', this.state.name);
-    
-   axios({
-       method: 'POST',
-       url: Config.API + 'productattribute/edit',
-       data: data,
-       config: { 
-           headers: { 'Content-Type': 'multipart/form-data' }
-        },
+  handleAttributeChange = (event) => {
+    this.setState({
+        attribute: event.target.value
     })
-   .then(res => {
-        //TODO edit dom object to refresh image
-        this.setState({
-            success: res.data.success,
-            message: res.data.message,  
-            edit: false,
-            openMessage: true,
-            loading: false,
-            id: -1,
-            name: ''
-        });
-
-        this.getElementsList();
-   })
-   .catch(function (error) {
-        console.log(error);
-   });
-}
+  }
 
   onClickRemoveSubmitHandler = (event) => {
     event.preventDefault();
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattribute/remove/${this.state.id}`;
+    var url = `${Config.API}productattributevalue/remove/${this.state.id}`;
 
     axios.get(url)
     .then(res => {
@@ -185,8 +177,14 @@ class SimpleGridList extends React.Component {
   }
 
   getElementsList(){
-    console.log(`Call Api: ${Config.API}productattribute/all`);
-    fetch(Config.API+'productattribute/all')
+
+    const { id } = this.props.match.params;
+
+    var url = `${Config.API}productattributevalue/product/${id}`;
+   
+    console.log(`Call Api: ${url}`);
+    
+    fetch(url)
     .then(result => {
         return result.json();
     })
@@ -194,10 +192,10 @@ class SimpleGridList extends React.Component {
         let elements = data.data.map((element) => {
             const { classes } = this.props;
             return (
-                <ListItem key={element.ProductAttributeId}>
-                  <ListItemText primary={`${element.Name}`} secondary={element.CreatedAt} />
+                <ListItem key={element.ProductAttributeValueId}>
+                  <ListItemText primary={`${element.Name}`} secondary={element.Value} />
                   <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete" onClick={( id = element.ProductAttributeId) => this.onClickRemoveHandler(id)}>
+                      <IconButton aria-label="Delete" onClick={( id = element.ProductAttributeValueId) => this.onClickRemoveHandler(id)}>
                         <DeleteIcon />
                       </IconButton>
                   </ListItemSecondaryAction>
@@ -208,7 +206,22 @@ class SimpleGridList extends React.Component {
     })
   }
 
+  getAttributeList(){
+    var url = `${Config.API}productattribute/all`;
+   
+    console.log(`Call Api: ${url}`);
+    
+    fetch(url)
+    .then(result => {
+        return result.json();
+    })
+    .then(data => {
+        this.setState({ attributes: data.data })
+    })
+  }
+
   componentDidMount() {
+    this.getAttributeList();
     this.getElementsList();
   }
 
@@ -218,6 +231,19 @@ class SimpleGridList extends React.Component {
     const { classes } = this.props;
     return ( 
       <div className={classes.root}>
+
+          <AppBar position="static">
+            <Toolbar variant="dense">
+              <Link to={`/home`}>
+                <IconButton className={classes.menuButton} aria-label="Menu">
+                  <BackIcon />
+                </IconButton>
+              </Link>
+                <Typography variant="h5" color="inherit">
+                  Regresar
+                </Typography>
+            </Toolbar>
+          </AppBar>
          
           <List className={classes.listSection}
                 component="nav"
@@ -237,8 +263,38 @@ class SimpleGridList extends React.Component {
               aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title">Agregar</DialogTitle>
               <form onSubmit={this.onClickAddSubmitHandler}>
-                <DialogContent>              
-                   <TextField autoFocus margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleNameChange} label="Nombre" type="text" fullWidth />
+                <DialogContent>   
+                  <TextField
+                    id="attribute"
+                    select
+                    label="Select"
+                    className={classes.textField}
+                    value={this.state.attribute}
+                    onChange={this.handleAttributeChange}
+                    SelectProps={{
+                      MenuProps: {
+                        className: classes.menu,
+                      },
+                    }}
+                    helperText="Selecciona un atributo"
+                    margin="normal"
+                  >
+                    {this.state.attributes.map(option => (
+                      <MenuItem key={option.ProductAttributeId} value={option.ProductAttributeId}>
+                        {option.Name}
+                      </MenuItem>
+                    ))}
+                  </TextField>           
+                   <TextField autoFocus 
+                      margin="dense" 
+                      id="value" 
+                      name="value" 
+                      className={classes.textField}
+                      value={this.state.value} 
+                      onChange={this.handleValueChange} 
+                      label="Valor" 
+                      type="text" 
+                      fullWidth />
                 </DialogContent>
                   {loading && <LinearProgress />}
                 <DialogActions>
@@ -274,9 +330,9 @@ class SimpleGridList extends React.Component {
                 <form onSubmit={this.onClickRemoveSubmitHandler}>
                   <DialogContent> 
                     <DialogContentText id="alert-dialog-description">
-                        Esta seguro que desea eliminar el producto: {this.state.Name}
+                        Esta seguro que desea eliminar el producto: {this.state.name}
                      </DialogContentText>
-                      <TextField id="id" name="id" type="hidden" value={this.state.ProductId} />                
+                      <TextField id="id" name="id" type="hidden" value={this.state.id} />                
                     </DialogContent>
                       {loading && <LinearProgress />}
                       <DialogActions>
@@ -307,8 +363,8 @@ class SimpleGridList extends React.Component {
     }
 }
 
-SimpleGridList.propTypes = {
+ProductAttributesValuesGridList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleGridList);
+export default withStyles(styles)(ProductAttributesValuesGridList);

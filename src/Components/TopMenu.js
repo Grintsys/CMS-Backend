@@ -22,7 +22,7 @@ import Categories from './CategoryList'
 import Products from './Products'
 import ProductAtributes from './Atributes'
 import Covers from './Covers'
-import { Redirect } from  'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
 import Paper from '@material-ui/core/Paper';
 const styles = theme => ({
@@ -63,7 +63,7 @@ class ClippedDrawer extends Component {
     super();
     this.state = {
       loggedIn: sessionStorage.getItem('loggedin') === 'true',
-      content: <Categories />,
+      content: <Products />,
     }
   }
 

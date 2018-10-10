@@ -12,6 +12,7 @@ import ListItem from '@material-ui/core/ListItem'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
+import ListIcon from '@material-ui/icons/List';
 import { Config } from './Config'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -26,6 +27,7 @@ import axios from 'axios';
 import { MySnackbarContentWrapper } from './SnackBarCustom'
 import Snackbar from '@material-ui/core/Snackbar'
 import LinearProgress from '@material-ui/core/LinearProgress';
+import { Link } from 'react-router-dom';
 
 const styles = theme => ({
   root: {
@@ -139,6 +141,13 @@ class ProductList extends React.Component {
   onClickRemoveHandler = (product) => {
 
     this.setProduct(product);
+
+    this.setState({
+      remove: true,
+    })
+  }
+
+  onClickAttributeHandler = (product) => {
 
     this.setState({
       remove: true,
@@ -296,14 +305,19 @@ class ProductList extends React.Component {
                         {product.PartNumber}: {product.Description}
                       </Typography>
                     </CardContent>
-                    <CardActions>
+                  <CardActions>
                       <Button size="small" color="secondary" onClick={() => this.onClickRemoveHandler(product)} >
                         <DeleteIcon />
                       </Button>
                       <Button size="small" color="primary" onClick={() => this.onClickEditHandler(product)} >
                         <EditIcon />
                       </Button>
-                    </CardActions>
+                      <Link to={`/values/${p}`}>
+                        <Button size="small" color="primary" onClick={() => this.onClickAttributeHandler(product)} >
+                          <ListIcon />
+                        </Button>
+                      </Link>
+                  </CardActions>
                 </Card>
               )
         })

@@ -103,12 +103,12 @@ class TitlebarGridList extends React.Component {
                 name: '',
                 file: []
             });
+
+            this.getCategoryList();
        })
        .catch(function (error) {
             console.log(error);
        });
-
-       this.getCategoryList();
     }
 
     onClickAddSubmitHandler = (event) =>{
@@ -140,12 +140,12 @@ class TitlebarGridList extends React.Component {
                 name: '',
                 file: []
             });
+
+            this.getCategoryList();
        })
        .catch(error => {
             console.log(error);
        });
-
-       this.getCategoryList();
     }
 
     onClickRemoveSubmitHandler = (event) => {
@@ -167,12 +167,12 @@ class TitlebarGridList extends React.Component {
               name: '',
               file: []
           });
+
+          this.getCategoryList();
         })
         .catch(function (error) {
            console.log(error);
         });
-    
-        this.getCategoryList();
       }
 
     onClickAddHandler = () => {
