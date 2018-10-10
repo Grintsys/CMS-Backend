@@ -17,10 +17,7 @@ module.exports = function(app, sql, sqlConfig){
 
                             var data = {
                                 success: true,
-                                message: 'added productattribute',
-                                device: name,
-                                status: status,
-                                rowsAffected: recordset.rowsAffected
+                                message: 'added productattribute'
                             }
 
                             res.send(data);

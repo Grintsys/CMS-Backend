@@ -1,17 +1,18 @@
 module.exports = function(app, sql, sqlConfig){
-    app.get('/productattributevalue/add/:name', function(req, res){
+
+    app.get('/productattributevalue/add/:productId.:attributeId.:value', function(req, res){
         console.log('call to api/productattribute/add');
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
 
-                var attibuteId = req.params.attibuteId;
                 var productId = req.params.productId;
+                var attributeId = req.params.attributeId;
                 var value = req.params.value;
 
                 var request = pool.request();
                 
-                var queryText = `insert into dbo.ProductAttributeValues(ProductAttributeId, ProductId, [Value], CreatedAt) \
-                                 values(${attibuteId}, ${productId}, ${value}, getdate())`;
+                var queryText = `insert into dbo.ProductAttributeValues(ProductId, [ProductAttributeId], [Value], CreatedAt) \
+                                 values(${productId}, ${attributeId}, '${value}', getdate())`;
 
                     request.query(queryText, (err, recordset) => {
                             if(err) console.log(err);
@@ -19,9 +20,6 @@ module.exports = function(app, sql, sqlConfig){
                             var data = {
                                 success: true,
                                 message: 'added productattributevalue',
-                                device: name,
-                                status: status,
-                                rowsAffected: recordset.rowsAffected
                             }
 
                             res.send(data);
@@ -50,58 +48,9 @@ module.exports = function(app, sql, sqlConfig){
                             var data = {
                                 success: true,
                                 message: 'ProductAttributeValues deleted',
-                                device: id,
-                                rowsAffected: recordset.rowsAffected
                             }
 
                             res.send(data);
-                    })
-        });
-        
-        pool.on('error', err => {
-            res.send({error: err, success:false});
-        });
-    })
-
-    app.get('/productattributevalue/update/:id.:vale', function(req, res){
-        console.log('call to api/productattributevalue/update');
-        const pool = new sql.ConnectionPool(sqlConfig, err => {
-                if(err) console.log(err);
-
-                var id = req.params.id;
-                var value = req.params.value;
-
-                var request = pool.request();
-                
-                var queryText = `update dbo.ProductAttributeValues set [Value] = '${name}'
-                                where [ProductAttributeValueId] = '${value}'`;
-
-                    request.query(queryText, (err, recordset) => {
-                            if(err) console.log(err);
-
-                            
-                            if(recordset.recordset.length > 0)
-                            {
-                                console.log("Success Login for student "+username);
-
-                                var result = {
-                                    success: true, 
-                                    users: recordset.recordset
-                                }; 
-
-                                res.send(result);
-            
-                            } else {
-
-                                var data = {
-                                    success: false,
-                                    message: 'Wrong username or password',
-                                    device: name,
-                                    rowsAffected: recordset.rowsAffected
-                                };
-
-                                res.send(data);
-                            }
                     })
         });
         
@@ -137,7 +86,7 @@ module.exports = function(app, sql, sqlConfig){
         });
     })
 
-    app.get('/productattributevalue/:id', function(req, res){
+    app.get('/productattributevalue/product/:id', function(req, res){
         console.log(`${new Date()}: get a productattributevalues`);
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
@@ -146,7 +95,16 @@ module.exports = function(app, sql, sqlConfig){
 
                 var request = pool.request();
                 
-                var queryText = `select * from dbo.ProductAttributeValues where ProductAttributeValueId = ${id}`;
+                var queryText = `select a.ProductAttributeId, 
+                                        a.ProductId,
+                                        c.[Name] as [Name],
+                                        b.[Name] as ProductName,
+                                        a.[Value],
+                                        a.CreatedAt
+                                from dbo.ProductAttributeValues a
+                                        inner join dbo.Products b on a.ProductId = b.ProductId
+                                        inner join dbo.ProductAttributes c on c.ProductAttributeId = a.ProductAttributeId
+                                where a.ProductId = ${id}`;
 
                 request.query(queryText, (err, recordset) => {
                             if(err) console.log(err);
