@@ -131,7 +131,7 @@ module.exports = function(app, sql, sqlConfig, upload){
 
                 var request = pool.request();
                 
-                var queryText = `select top 100 * from dbo.CoverPage`;
+                var queryText = `select top 100 * from dbo.CoverPage a order by a.[Position] asc`;
 
                 request.query(queryText, (err, recordset) => {
                             if(err) console.log(err);

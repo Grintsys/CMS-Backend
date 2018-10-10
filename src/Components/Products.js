@@ -312,8 +312,7 @@ class ProductList extends React.Component {
     })
   }
 
-  componentDidMount()
-  {
+  componentDidMount(){
       this.getProductList();
   }
 

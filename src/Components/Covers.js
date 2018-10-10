@@ -176,12 +176,12 @@ class Covers extends React.Component {
                 openMessage: true  ,
                 add: false
             });
+
+            this.getCoverList();
        })
        .catch(error => {
             console.log(error);
        });
-
-       this.getCoverList();
   }
 
   onClickEditSubmitHandler = (event) => {
@@ -206,12 +206,12 @@ class Covers extends React.Component {
                 openMessage: true,
                 edit: false
             });
+
+            this.getCoverList();
        })
        .catch(error => {
             console.log(error);
        });
-
-       this.getCoverList();
   }
 
   onClickRemoveSubmitHandler = (event) => {
@@ -230,12 +230,12 @@ class Covers extends React.Component {
           remove: false,
           loading: false,
         })
+
+        this.getCoverList();
     })
     .catch(function (error) {
        console.log(error);
     });
-
-    this.getCoverList();
   }
 
   componentDidMount()

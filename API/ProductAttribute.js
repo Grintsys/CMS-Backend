@@ -1,4 +1,5 @@
 module.exports = function(app, sql, sqlConfig){
+
     app.get('/productattribute/add/:name', function(req, res){
         console.log('call to api/productattribute/add');
         const pool = new sql.ConnectionPool(sqlConfig, err => {
@@ -61,7 +62,7 @@ module.exports = function(app, sql, sqlConfig){
         });
     })
 
-    app.get('/productattribute/update/:id.:name', function(req, res){
+    app.get('/productattribute/edit/:id.:name', function(req, res){
         console.log('call to api/productattributes/update');
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);

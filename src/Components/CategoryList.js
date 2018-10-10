@@ -227,8 +227,8 @@ class TitlebarGridList extends React.Component {
                         <GridListTileBar
                             title={category.Name}
                             actionIcon={
-                                <IconButton className={classes.icon} onClick={() => this.onClickEditHandler(category)}>
-                                    <EditIcon />
+                                <IconButton className={classes.icon} onClick={() => this.onClickRemoveHandler(category)}>
+                                    <DeleteIcon />
                                 </IconButton>
                             }
                         />
@@ -236,7 +236,6 @@ class TitlebarGridList extends React.Component {
                 )
             })
             this.setState({ categories: categories })
-            //console.log("state", this.state.categories);
         })
     }
 

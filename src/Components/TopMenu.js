@@ -20,6 +20,7 @@ import StarIcon from '@material-ui/icons/Star';
 import SendIcon from '@material-ui/icons/Send';
 import Categories from './CategoryList'
 import Products from './Products'
+import ProductAtributes from './Atributes'
 import Covers from './Covers'
 import { Redirect } from  'react-router-dom';
 
@@ -87,7 +88,7 @@ class ClippedDrawer extends Component {
 
   handleProductAttributesClick = () => {
     this.setState({
-      content: <Covers />
+      content: <ProductAtributes />
     })
   }
 
@@ -136,7 +137,7 @@ class ClippedDrawer extends Component {
               </ListItemIcon>
               <ListItemText primary="Productos" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={this.handleProductAttributesClick}>
               <ListItemIcon>
                 <StarIcon />
               </ListItemIcon>
