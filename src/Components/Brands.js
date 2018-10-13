@@ -63,20 +63,23 @@ class BrandsGridList extends React.Component {
   onClickAddHandler = () => {
     this.setState({
       add: true,
+      openMessage: false,
     })
   }
 
   onClickEditHandler = (id) => {
     this.setState({
       edit: true,
-      id: id
+      id: id,
+      openMessage: false,
     })
   }
 
   onClickRemoveHandler = (id) => {
     this.setState({
       remove: true,
-      id: id
+      id: id,
+      openMessage: false,
     })
   }
 
@@ -84,7 +87,8 @@ class BrandsGridList extends React.Component {
     this.setState({
       add: false,
       edit: false,
-      remove: false
+      remove: false,
+      openMessage: false,
     })
   }
 

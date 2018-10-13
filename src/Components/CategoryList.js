@@ -69,7 +69,8 @@ class TitlebarGridList extends React.Component {
         this.setState({ 
             edit: false, 
             add: false, 
-            remove: false 
+            remove: false,
+            openMessage: false,
         });
     };
 
@@ -183,14 +184,17 @@ class TitlebarGridList extends React.Component {
         this.setState({ 
             edit: true, 
             id: category.CategoryId, 
-            name: category.Name });
+            name: category.Name,
+            openMessage: false,
+        });
     }
 
     onClickRemoveHandler = (category) => {
         this.setState({
             remove: true,
             id: category.CategoryId, 
-            name: category.Name
+            name: category.Name,
+            openMessage: false,
         })
     }
 
