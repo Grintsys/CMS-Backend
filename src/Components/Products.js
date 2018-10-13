@@ -303,6 +303,18 @@ class ProductList extends React.Component {
     })
   }
 
+  getProductAttributesList = () => {
+    fetch(Config.API+'brand/all')
+    .then(result => {
+        return result.json();
+    })
+    .then(data => {
+      this.setState({
+        brands : data.data
+      });
+    })
+  }
+
   getProductList = () => {
     const { classes } = this.props;
     fetch(Config.API+'product/all?limit=1000')
@@ -486,7 +498,7 @@ class ProductList extends React.Component {
                 onClose={this.onClickCloseHandle}>
               <MySnackbarContentWrapper
                   onClose={this.onClickCloseHandle}
-                  variant="success"
+                  variant={!this.state.success ? "error" : "success" }
                   message={this.state.message}
               />
               </Snackbar>

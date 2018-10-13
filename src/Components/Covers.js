@@ -361,7 +361,7 @@ class Covers extends React.Component {
             onClose={this.onClickCloseHandle}>
           <MySnackbarContentWrapper
               onClose={this.onClickCloseHandle}
-              variant="error"
+              variant={!this.state.success ? "error" : "success" }
               message={this.state.message}
           />
           </Snackbar>

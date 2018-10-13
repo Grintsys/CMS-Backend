@@ -20,18 +20,32 @@ import axios from 'axios';
 import { MySnackbarContentWrapper } from './SnackBarCustom'
 import Snackbar from '@material-ui/core/Snackbar'
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 const styles = theme => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-around',
+    //justifyContent: 'space-around',
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
-    width: 500,
-    height: 600,
+    flexWrap: 'nowrap',
+    transform: 'translateZ(0)',
+  },
+  gridItemImage: {
+    width: '300px',
+  },
+  titleBar: {
+    background:
+      'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
+      'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
   },
   icon: {
     color: 'rgba(255, 255, 255, 0.54)',
@@ -46,6 +60,71 @@ const styles = theme => ({
   },
 });
 
+function CategoriesRender(props){
+
+    const { classes, categories } = props;
+
+    if(!categories){
+        return null;
+    }
+    
+    let view = categories.map((category) => { 
+        let cId = category.CategoryId;
+        return (
+            <GridListTile key={cId}>
+                <img src={Config.API+category.ImageUrl}
+                     alt={category.Name} 
+                     className={classes.gridItemImage} />
+                <GridListTileBar onClick={props.clicked(cId)}
+                                 title={category.Name}
+                                 actionIcon={
+                                        <IconButton className={classes.icon} onClick={() => props.remove(category)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    }
+                                //className={classes.titleBar}
+                />
+            </GridListTile>
+        );
+    })
+
+    return view;
+}
+
+function SubCategoriesRender(props){
+
+    const { classes, subcategories } = props;
+
+    if(!subcategories){
+        return null;
+    }
+
+    return (
+        <Paper className={classes.root}>
+            <Table className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell numeric>Id</TableCell>
+                        <TableCell>Nombre</TableCell>
+                        <TableCell numeric>Fecha de Creación</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                {subcategories.map(row => {
+                    return (
+                    <TableRow key={row.id}>
+                        <TableCell numeric>{row.SubcategoryId}</TableCell>
+                        <TableCell component="th" scope="row">{row.Name}</TableCell>
+                        <TableCell numeric>{row.CreatedAt}</TableCell>
+                    </TableRow>
+                    );
+                })}
+                </TableBody>
+            </Table>
+        </Paper>
+    );
+}
+
 class TitlebarGridList extends React.Component {
 
     constructor(){
@@ -59,6 +138,7 @@ class TitlebarGridList extends React.Component {
             loading: false,
             message: '',
             openMessage: false,
+            cId: -1,
             id: -1,
             name: '',
             file: [],
@@ -177,7 +257,10 @@ class TitlebarGridList extends React.Component {
       }
 
     onClickAddHandler = () => {
-        this.setState({ add: true });
+        this.setState({ 
+            add: true,
+            openMessage: false,
+        });
     }
 
     onClickEditHandler = (category) => {
@@ -210,6 +293,10 @@ class TitlebarGridList extends React.Component {
         })
     }
 
+    handleClickTest = (id) => {
+        console.log("hey");
+    }
+
     handleFileChange = (event) => {
         const file = event.target.files[0];
         this.setState({
@@ -218,34 +305,36 @@ class TitlebarGridList extends React.Component {
     }
 
     getCategoryList(){
-        fetch(Config.API+'category/all')
+        var url = `${Config.API}category/all`;
+        console.log(`Url API: ${url}`);
+
+        fetch(url)
         .then(result => {
             return result.json();
         })
         .then(data => {
-            let categories = data.data.map((category) => {
-                const { classes } = this.props;
-                return (
-                    <GridListTile key={category.CategoryId}>
-                        <img src={Config.API+category.ImageUrl} alt={category.Name} />
-                        <GridListTileBar
-                            title={category.Name}
-                            actionIcon={
-                                <IconButton className={classes.icon} onClick={() => this.onClickRemoveHandler(category)}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            }
-                        />
-                    </GridListTile>
-                )
-            })
-            this.setState({ categories: categories })
+            this.setState({ categories: data.data })
+        })
+    }
+
+    getSubCategoryList(categoryId){
+        var url = `${Config.API}subcategory/category/${categoryId}`;
+        console.log(`Url API: ${url}`);
+
+        if(!categoryId){
+            return null;
+        }
+
+        fetch(url)
+        .then(result => {
+            return result.json();
+        })
+        .then(data => {
+            this.setState({ subcategories: data.data })
         })
     }
 
     componentDidMount() {
-        console.log("call apo: "+Config.API);
-
         this.getCategoryList();
     }
 
@@ -254,8 +343,12 @@ class TitlebarGridList extends React.Component {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                <GridList cellHeight={180} className={classes.gridList}>
-                    {this.state.categories}
+                <GridList className={classes.gridList}>
+                    <CategoriesRender categories={this.state.categories} 
+                                      clicked={() => this.handleClickTest} 
+                                      remove={this.onClickRemoveHandler}
+                                      {...this.props} />
+                    <SubCategoriesRender subcategories={this.state.subcategories} />
                 </GridList>
                 <div>
                     <Button variant="fab" color="primary" aria-label="Add" className={classes.fab} onClick={this.onClickAddHandler}>
@@ -272,7 +365,7 @@ class TitlebarGridList extends React.Component {
                         <form onSubmit={this.onClickEditSubmitHandler}>
                             <DialogContent> 
                                     <TextField id="id" name="id" type="hidden" value={this.state.categoryId} onChange={this.handleIdChange} />                
-                                    <TextField autoFocus margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleNameChange} label="Nombre" type="text" fullWidth />
+                                    <TextField required autoFocus margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleNameChange} label="Nombre" type="text" fullWidth />
                                     <TextField autoFocus margin="dense" id="file" name="file" onChange={this.handleFileChange} label="File" type="file" fullWidth/>
                             </DialogContent>
                                 {loading && <LinearProgress />}
@@ -290,8 +383,8 @@ class TitlebarGridList extends React.Component {
                         <DialogTitle id="form-dialog-title">Agregar</DialogTitle>
                         <form onSubmit={this.onClickAddSubmitHandler}>
                             <DialogContent>              
-                                    <TextField autoFocus margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleNameChange} label="Nombre" type="text" fullWidth />
-                                    <TextField autoFocus margin="dense" id="file" name="file" onChange={this.handleFileChange} label="File" type="file" fullWidth/>
+                                    <TextField required autoFocus margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleNameChange} label="Nombre" type="text" fullWidth />
+                                    <TextField required autoFocus margin="dense" id="file" name="file" onChange={this.handleFileChange} label="File" type="file" fullWidth/>
                             </DialogContent>
                                 {loading && <LinearProgress />}
                             <DialogActions>
@@ -309,9 +402,10 @@ class TitlebarGridList extends React.Component {
                             <form onSubmit={this.onClickRemoveSubmitHandler}>
                             <DialogContent> 
                             <DialogContentText id="alert-dialog-description">
-                                Esta seguro que desea eliminar el producto: {this.state.Name}
+                                Esta seguro que desea eliminar el producto: {this.state.name} ?
+                                Si una categoria posee otras asignadas no se podra eliminar.
                             </DialogContentText>
-                                <TextField id="id" name="id" type="hidden" value={this.state.ProductId} />                
+                                <TextField id="id" name="id" type="hidden" value={this.state.id} />                
                             </DialogContent>
                                 {loading && <LinearProgress />}
                             <DialogActions>
@@ -332,7 +426,7 @@ class TitlebarGridList extends React.Component {
                         onClose={this.onClickCloseHandle}>
                     <MySnackbarContentWrapper
                         onClose={this.onClickCloseHandle}
-                        variant="success"
+                        variant={!this.state.success ? "error" : "success" }
                         message={this.state.message}
                     />
                     </Snackbar>

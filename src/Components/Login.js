@@ -181,7 +181,7 @@ class LoginForm extends React.Component {
                             onClose={this.handleClose}>
                         <MySnackbarContentWrapper
                             onClose={this.handleClose}
-                            variant="error"
+                            variant={!this.state.success ? "error" : "success" }
                             message={this.state.message}
                         />
                         </Snackbar>

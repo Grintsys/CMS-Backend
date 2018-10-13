@@ -302,7 +302,7 @@ class SimpleGridList extends React.Component {
                         onClose={this.onClickCloseHandle}>
                     <MySnackbarContentWrapper
                         onClose={this.onClickCloseHandle}
-                        variant="success"
+                        variant={!this.state.success ? "error" : "success" }
                         message={this.state.message}
                     />
                     </Snackbar>
