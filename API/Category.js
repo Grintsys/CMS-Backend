@@ -53,16 +53,25 @@ module.exports = function(app, sql, sqlConfig, upload){
                 var queryText = `delete from dbo.Categories where dbo.Categories.CategoryId = ${id}`;
 
                     request.query(queryText, (err, recordset) => {
-                            if(err) console.log(err);
-
-                            var data = {
-                                success: true,
-                                message: 'category deleted',
-                                device: id,
-                                rowsAffected: recordset.rowsAffected
+                            
+                            if(err) 
+                            { 
+                                console.log(err);
+                                var data = {
+                                    success: false,                             
+                                    message: 'error on delete',
+                                }                             
+                                res.send(data);
                             }
-
-                            res.send(data);
+                            else {
+                                var data = {
+                                    success: true,
+                                    message: 'category deleted',
+                                    rowsAffected: recordset.rowsAffected
+                                }                             
+                                res.send(data);
+                            }
+                   
                     })
         });
         

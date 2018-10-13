@@ -11,8 +11,7 @@ module.exports = function(app, sql, sqlConfig, upload){
                 var name = req.body.Name;
                 var description = req.body.Description;
                 var qty = req.body.Qty;
-                var price = req.body.Price;
-                var file = req.file.filename;               
+                var price = req.body.Price;            
 
                 var request = pool.request();
                 
@@ -21,6 +20,7 @@ module.exports = function(app, sql, sqlConfig, upload){
 
                 if (req.file)
                 {
+                    var file = req.file.filename;
                     queryText = `insert into dbo.Products(ImageUrl, [SubCategoryId], BrandId, PartNumber, [Name], [Description], [Qty], [Price], IsActive, CreatedAt) \
                                                   values ('${file}', ${subCategory}, ${brandId}, '${partNumber}', '${name}', '${description}', ${qty}, ${price}, 1, getdate())`;
                 }
@@ -61,8 +61,7 @@ module.exports = function(app, sql, sqlConfig, upload){
                 var name = req.body.Name;
                 var description = req.body.Description;
                 var qty = req.body.Qty;
-                var price = req.body.Price;
-                var file = req.file.filename;               
+                var price = req.body.Price;               
 
                 var request = pool.request();
                 
@@ -78,6 +77,7 @@ module.exports = function(app, sql, sqlConfig, upload){
 
                 if (req.file)
                 {
+                    var file = req.file.filename;
                     queryText = `update dbo.Products \
                     set BrandId = ${brandId}, 
                     SubCategoryId = ${subCategory},
@@ -287,6 +287,4 @@ module.exports = function(app, sql, sqlConfig, upload){
             res.send({error: err, success:false});
         });
     })
-
-   
 }

@@ -7,7 +7,7 @@ module.exports = function(app, sql, sqlConfig){
 
                 var request = pool.request();
                 
-                var queryText = `insert into dbo.Categories([Name]) \
+                var queryText = `insert into dbo.Brands([Name]) \
                                     values('${name}')`;
 
                     request.query(queryText, (err, recordset) => {
@@ -15,10 +15,7 @@ module.exports = function(app, sql, sqlConfig){
 
                             var data = {
                                 success: true,
-                                message: 'added brand',
-                                device: name,
-                                status: status,
-                                rowsAffected: recordset.rowsAffected
+                                message: 'added brand'
                             }
 
                             res.send(data);
@@ -46,9 +43,7 @@ module.exports = function(app, sql, sqlConfig){
 
                             var data = {
                                 success: true,
-                                message: 'brand deleted',
-                                device: id,
-                                rowsAffected: recordset.rowsAffected
+                                message: 'brand deleted'
                             }
 
                             res.send(data);
@@ -78,9 +73,7 @@ module.exports = function(app, sql, sqlConfig){
 
                             var data = {
                                 success: true,
-                                message: 'brand updated',
-                                device: name,
-                                rowsAffected: recordset.rowsAffected
+                                message: 'brand updated'
                             }
 
                             res.send(data);

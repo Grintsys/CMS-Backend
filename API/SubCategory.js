@@ -153,7 +153,7 @@ module.exports = function(app, sql, sqlConfig){
     })
 
     
-    app.get('/subcategory/parent/:id', function(req, res){
+    app.get('/subcategory/category/:id', function(req, res){
         console.log(`${new Date()}: get by subcategory parent`);
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
