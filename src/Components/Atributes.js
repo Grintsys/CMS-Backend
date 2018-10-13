@@ -65,6 +65,7 @@ class SimpleGridList extends React.Component {
     console.log("Add");
     this.setState({
       add: true,
+      openMessage: false,
     })
   }
 
@@ -72,7 +73,8 @@ class SimpleGridList extends React.Component {
     //this.setProduct(product);
     this.setState({
       edit: true,
-      id: id
+      id: id,
+      openMessage: false,
     })
   }
 
@@ -80,7 +82,8 @@ class SimpleGridList extends React.Component {
     //this.setProduct(product);  
     this.setState({
       remove: true,
-      id: id
+      id: id,
+      openMessage: false,
     })
   }
 
@@ -88,7 +91,8 @@ class SimpleGridList extends React.Component {
     this.setState({
       add: false,
       edit: false,
-      remove: false
+      remove: false,
+      openMessage: false,
     })
   }
 
@@ -193,11 +197,12 @@ class SimpleGridList extends React.Component {
     .then(data => {
         let elements = data.data.map((element) => {
             const { classes } = this.props;
+            let aId = element.ProductAttributeId;
             return (
-                <ListItem key={element.ProductAttributeId}>
+                <ListItem key={aId}>
                   <ListItemText primary={`${element.Name}`} secondary={element.CreatedAt} />
                   <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete" onClick={( id = element.ProductAttributeId) => this.onClickRemoveHandler(id)}>
+                      <IconButton aria-label="Delete" onClick={() => this.onClickRemoveHandler(aId)}>
                         <DeleteIcon />
                       </IconButton>
                   </ListItemSecondaryAction>
@@ -274,9 +279,9 @@ class SimpleGridList extends React.Component {
                 <form onSubmit={this.onClickRemoveSubmitHandler}>
                   <DialogContent> 
                     <DialogContentText id="alert-dialog-description">
-                        Esta seguro que desea eliminar el producto: {this.state.Name}
+                        Esta seguro que desea eliminar el producto: {this.state.id}
                      </DialogContentText>
-                      <TextField id="id" name="id" type="hidden" value={this.state.ProductId} />                
+                      <TextField id="id" name="id" type="hidden" value={this.state.id} />                
                     </DialogContent>
                       {loading && <LinearProgress />}
                       <DialogActions>
@@ -297,7 +302,7 @@ class SimpleGridList extends React.Component {
                         onClose={this.onClickCloseHandle}>
                     <MySnackbarContentWrapper
                         onClose={this.onClickCloseHandle}
-                        variant="success"
+                        variant={!this.state.success ? "error" : "success" }
                         message={this.state.message}
                     />
                     </Snackbar>

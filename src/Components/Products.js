@@ -19,14 +19,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FormControl } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel'
-import FormHelperText from '@material-ui/core/FormHelperText'
 import axios from 'axios';
 import { MySnackbarContentWrapper } from './SnackBarCustom'
 import Snackbar from '@material-ui/core/Snackbar'
 import LinearProgress from '@material-ui/core/LinearProgress';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Link } from 'react-router-dom';
 
 const styles = theme => ({
@@ -93,6 +91,7 @@ class ProductList extends React.Component {
       BrandId: 1, 
       File: [],
       products: [],
+      brands: [],
       product_default: {
         ProductId: -1,
         Name: '',
@@ -126,6 +125,7 @@ class ProductList extends React.Component {
 
     this.setState({
       add: true,
+      openMessage: false,
     })
   }
 
@@ -135,6 +135,7 @@ class ProductList extends React.Component {
 
     this.setState({
       edit: true,
+      openMessage: false,
     })
   }
 
@@ -144,6 +145,7 @@ class ProductList extends React.Component {
 
     this.setState({
       remove: true,
+      openMessage: false,
     })
   }
 
@@ -158,7 +160,8 @@ class ProductList extends React.Component {
     this.setState({
       add: false,
       edit: false,
-      remove: false
+      remove: false,
+      openMessage: false
     })
   }
 
@@ -171,6 +174,13 @@ class ProductList extends React.Component {
       [name]: value
     });
   }
+
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value,
+    });
+  };
+
 
   onClickAddSubmitHandler = (event) => {
     event.preventDefault();
@@ -281,6 +291,30 @@ class ProductList extends React.Component {
     this.getProductList();
   }
 
+  getBrandList = () => {
+    fetch(Config.API+'brand/all')
+    .then(result => {
+        return result.json();
+    })
+    .then(data => {
+      this.setState({
+        brands : data.data
+      });
+    })
+  }
+
+  getProductAttributesList = () => {
+    fetch(Config.API+'brand/all')
+    .then(result => {
+        return result.json();
+    })
+    .then(data => {
+      this.setState({
+        brands : data.data
+      });
+    })
+  }
+
   getProductList = () => {
     const { classes } = this.props;
     fetch(Config.API+'product/all?limit=1000')
@@ -303,6 +337,9 @@ class ProductList extends React.Component {
                       </Typography>
                       <Typography component="p">
                         {product.PartNumber}: {product.Description}
+                      </Typography>
+                      <Typography component="p">
+                        {"Marca: "+product.Brand}
                       </Typography>
                     </CardContent>
                   <CardActions>
@@ -327,6 +364,7 @@ class ProductList extends React.Component {
   }
 
   componentDidMount(){
+      this.getBrandList();
       this.getProductList();
   }
 
@@ -349,10 +387,34 @@ class ProductList extends React.Component {
                   <DialogTitle id="form-dialog-title">Agregar Producto</DialogTitle>
                     <form onSubmit={this.onClickAddSubmitHandler}>
                       <DialogContent> 
-                        <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} fullWidth />
-                        <TextField autoFocus margin="dense" required name="Description" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline fullWidth />     
-                        <TextField autoFocus margin="dense" required name="PartNumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} fullWidth />    
-                        <TextField autoFocus margin="dense" required name="File" label="Imagen" type="file" onChange={this.handleInputChange} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} className={classes.textField} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Description" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline className={classes.textField} fullWidth />     
+                        <TextField autoFocus margin="dense" required name="PartNumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} className={classes.textField} fullWidth /> 
+                        <TextField id="BrandId"
+                                   select
+                                   label="Select"
+                                   margin="dense"
+                                   fullWidth
+                                   className={classes.textField}
+                                   value={this.state.BrandId}
+                                   onChange={this.handleChange('BrandId')}
+                                   SelectProps={{
+                                      MenuProps: {
+                                        native: true,
+                                        className: classes.menu,
+                                      },
+                                    }}
+                                    helperText="Selecciona una marca"
+                                    margin="normal"
+                                  >
+                                    {this.state.brands.map(option => (
+                                      <MenuItem key={option.BrandId} value={option.BrandId}>
+                                        {option.Name}
+                                      </MenuItem>
+                                    ))}
+                          </TextField>   
+         
+                        <TextField autoFocus margin="dense" required name="File" label="Imagen" type="file" onChange={this.handleInputChange} className={classes.textField} fullWidth />
                       </DialogContent>
                       {loading && <LinearProgress />}
                       <DialogActions>
@@ -368,12 +430,35 @@ class ProductList extends React.Component {
                   <DialogTitle id="form-dialog-title">Editar producto</DialogTitle>
                     <form onSubmit={this.onClickEditSubmitHandler}>
                       <DialogContent> 
-                        <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} fullWidth />
-                        <TextField autoFocus margin="dense" required name="Description" margin="normal" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline fullWidth />     
-                        <TextField autoFocus margin="dense" required name="Partnumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} fullWidth />
-                        <TextField autoFocus margin="dense" required name="Qty" label="Cantidad" type="number"  value={this.state.Qty} onChange={this.handleInputChange} fullWidth />
-                        <TextField autoFocus margin="dense" required name="Price" label="Precio" type="number" value={this.state.Price} onChange={this.handleInputChange} fullWidth />     
-                        <TextField autoFocus margin="dense" required name="File" label="Imagen" type="file" onChange={this.handleInputChange} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} className={classes.textField} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Description" margin="normal" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline className={classes.textField} fullWidth />     
+                        <TextField autoFocus margin="dense" required name="Partnumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} className={classes.textField} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Qty" label="Cantidad" type="number"  value={this.state.Qty} onChange={this.handleInputChange} className={classes.textField} fullWidth />
+                        <TextField autoFocus margin="dense" required name="Price" label="Precio" type="number" value={this.state.Price} onChange={this.handleInputChange} className={classes.textField} fullWidth />    
+                        <TextField id="BrandId"
+                                   select
+                                   label="Select"
+                                   margin="dense"
+                                   fullWidth
+                                   className={classes.textField}
+                                   value={this.state.BrandId}
+                                   onChange={this.handleChange('BrandId')}
+                                   SelectProps={{
+                                      MenuProps: {
+                                        native: true,
+                                        className: classes.menu,
+                                      },
+                                    }}
+                                    helperText="Selecciona una marca"
+                                    margin="normal"
+                                  >
+                                    {this.state.brands.map(option => (
+                                      <MenuItem key={option.BrandId} value={option.BrandId}>
+                                        {option.Name}
+                                      </MenuItem>
+                                    ))}
+                          </TextField>    
+                        <TextField autoFocus margin="dense" name="File" label="Imagen" type="file" onChange={this.handleInputChange} className={classes.textField} fullWidth />
                       </DialogContent>
                       {loading && <LinearProgress />}
                       <DialogActions>
@@ -413,7 +498,7 @@ class ProductList extends React.Component {
                 onClose={this.onClickCloseHandle}>
               <MySnackbarContentWrapper
                   onClose={this.onClickCloseHandle}
-                  variant="success"
+                  variant={!this.state.success ? "error" : "success" }
                   message={this.state.message}
               />
               </Snackbar>

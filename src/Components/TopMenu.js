@@ -13,6 +13,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import CategoryList from '@material-ui/icons/FormatListBulleted'
 import CoverList from '@material-ui/icons/ImageAspectRatio'
+import FavIcon from '@material-ui/icons/Favorite'
 import ProductList from '@material-ui/icons/FileUpload'
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import DraftsIcon from '@material-ui/icons/Drafts';
@@ -22,6 +23,7 @@ import Categories from './CategoryList'
 import Products from './Products'
 import ProductAtributes from './Atributes'
 import Covers from './Covers'
+import Brands from './Brands'
 import { Redirect } from 'react-router-dom';
 
 import Paper from '@material-ui/core/Paper';
@@ -86,6 +88,12 @@ class ClippedDrawer extends Component {
     })
   }
 
+  handleBrandsClick = () => {
+    this.setState({
+      content: <Brands />
+    })
+  }
+
   handleProductAttributesClick = () => {
     this.setState({
       content: <ProductAtributes />
@@ -130,6 +138,12 @@ class ClippedDrawer extends Component {
                 <CategoryList />
               </ListItemIcon>
               <ListItemText primary="Categorias" />
+            </ListItem>
+            <ListItem button onClick={this.handleBrandsClick}>
+              <ListItemIcon>
+                <FavIcon />
+              </ListItemIcon>
+              <ListItemText primary="Marcas" />
             </ListItem>
             <ListItem button onClick={this.handleProductsClick}>
               <ListItemIcon>
