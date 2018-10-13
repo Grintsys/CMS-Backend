@@ -67,6 +67,10 @@ function CategoriesRender(props){
     if(!categories){
         return null;
     }
+
+    if(categories.length == 0){
+        return null;
+    }
     
     let view = categories.map((category) => { 
         let cId = category.CategoryId;
@@ -75,10 +79,10 @@ function CategoriesRender(props){
                 <img src={Config.API+category.ImageUrl}
                      alt={category.Name} 
                      className={classes.gridItemImage} />
-                <GridListTileBar onClick={props.clicked(cId)}
+                <GridListTileBar onClick={() => props.clicked(cId)}
                                  title={category.Name}
                                  actionIcon={
-                                        <IconButton className={classes.icon} onClick={() => props.remove(category)}>
+                                        <IconButton className={classes.icon} onClick={() => props.remove(cId)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     }
@@ -99,6 +103,10 @@ function SubCategoriesRender(props){
         return null;
     }
 
+    if(subcategories.length == 0){
+        return null;
+    }
+
     return (
         <Paper className={classes.root}>
             <Table className={classes.table}>
@@ -112,8 +120,8 @@ function SubCategoriesRender(props){
                 <TableBody>
                 {subcategories.map(row => {
                     return (
-                    <TableRow key={row.id}>
-                        <TableCell numeric>{row.SubcategoryId}</TableCell>
+                    <TableRow key={row.SubCategoryId}>
+                        <TableCell numeric>{row.SubCategoryId}</TableCell>
                         <TableCell component="th" scope="row">{row.Name}</TableCell>
                         <TableCell numeric>{row.CreatedAt}</TableCell>
                     </TableRow>
@@ -131,6 +139,7 @@ class TitlebarGridList extends React.Component {
         super();
         this.state = {
             categories: [],
+            subcategories: [],
             edit: false,
             add: false,
             remove: false,
@@ -293,8 +302,9 @@ class TitlebarGridList extends React.Component {
         })
     }
 
-    handleClickTest = (id) => {
-        console.log("hey");
+    handleCategoryClick = (id) => {
+        //console.log("entro aqui");
+        this.getSubCategoryList(id);
     }
 
     handleFileChange = (event) => {
@@ -330,7 +340,7 @@ class TitlebarGridList extends React.Component {
             return result.json();
         })
         .then(data => {
-            this.setState({ subcategories: data.data })
+            this.setState({ subcategories: data.data, categories: [] })
         })
     }
 
@@ -345,10 +355,11 @@ class TitlebarGridList extends React.Component {
             <div className={classes.root}>
                 <GridList className={classes.gridList}>
                     <CategoriesRender categories={this.state.categories} 
-                                      clicked={() => this.handleClickTest} 
+                                      clicked={this.handleCategoryClick} 
                                       remove={this.onClickRemoveHandler}
                                       {...this.props} />
-                    <SubCategoriesRender subcategories={this.state.subcategories} />
+                    <SubCategoriesRender subcategories={this.state.subcategories} 
+                                      {...this.props}/>
                 </GridList>
                 <div>
                     <Button variant="fab" color="primary" aria-label="Add" className={classes.fab} onClick={this.onClickAddHandler}>
