@@ -125,6 +125,7 @@ class ProductList extends React.Component {
 
     this.setState({
       add: true,
+      openMessage: false,
     })
   }
 
@@ -134,6 +135,7 @@ class ProductList extends React.Component {
 
     this.setState({
       edit: true,
+      openMessage: false,
     })
   }
 
@@ -143,6 +145,7 @@ class ProductList extends React.Component {
 
     this.setState({
       remove: true,
+      openMessage: false,
     })
   }
 
@@ -157,7 +160,8 @@ class ProductList extends React.Component {
     this.setState({
       add: false,
       edit: false,
-      remove: false
+      remove: false,
+      openMessage: false
     })
   }
 
