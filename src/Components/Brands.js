@@ -42,7 +42,7 @@ const styles = theme => ({
 });
 
 
-class SimpleGridList extends React.Component {
+class BrandsGridList extends React.Component {
 
   constructor(){
       super();
@@ -61,15 +61,12 @@ class SimpleGridList extends React.Component {
   }
 
   onClickAddHandler = () => {
-    //this.setProduct([]); 
-    console.log("Add");
     this.setState({
       add: true,
     })
   }
 
   onClickEditHandler = (id) => {
-    //this.setProduct(product);
     this.setState({
       edit: true,
       id: id
@@ -77,7 +74,6 @@ class SimpleGridList extends React.Component {
   }
 
   onClickRemoveHandler = (id) => {
-    //this.setProduct(product);  
     this.setState({
       remove: true,
       id: id
@@ -97,7 +93,7 @@ class SimpleGridList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattribute/add/${this.state.name}`;
+    var url = `${Config.API}brand/add/${this.state.name}`;
 
     axios.get(url)
     .then(res => {
@@ -163,7 +159,7 @@ class SimpleGridList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattribute/remove/${this.state.id}`;
+    var url = `${Config.API}brand/remove/${this.state.id}`;
 
     axios.get(url)
     .then(res => {
@@ -185,20 +181,21 @@ class SimpleGridList extends React.Component {
   }
 
   getElementsList(){
-    console.log(`Call Api: ${Config.API}productattribute/all`);
-    fetch(Config.API+'productattribute/all')
+    var url = `${Config.API}brand/all`;
+    console.log(`Call Api: ${url}`);
+    fetch(url)
     .then(result => {
         return result.json();
     })
     .then(data => {
         let elements = data.data.map((element) => {
             const { classes } = this.props;
-            let aId = element.ProductAttributeId;
+            let bId = element.BrandId;
             return (
-                <ListItem key={aId}>
-                  <ListItemText primary={`${element.Name}`} secondary={element.CreatedAt} />
+                <ListItem key={bId}>
+                  <ListItemText primary={`${element.Name}`} secondary={`Id: ${bId}`}/>
                   <ListItemSecondaryAction>
-                      <IconButton aria-label="Delete" onClick={() => this.onClickRemoveHandler(aId)}>
+                      <IconButton aria-label="Delete" onClick={() => this.onClickRemoveHandler(bId)}>
                         <DeleteIcon />
                       </IconButton>
                   </ListItemSecondaryAction>
@@ -222,7 +219,7 @@ class SimpleGridList extends React.Component {
          
           <List className={classes.listSection}
                 component="nav"
-                subheader={<ListSubheader component="div">Lista de atributos de productos</ListSubheader>}
+                subheader={<ListSubheader component="div">Lista de marcas</ListSubheader>}
             >
             {this.state.elements}
           </List>
@@ -275,7 +272,7 @@ class SimpleGridList extends React.Component {
                 <form onSubmit={this.onClickRemoveSubmitHandler}>
                   <DialogContent> 
                     <DialogContentText id="alert-dialog-description">
-                        Esta seguro que desea eliminar el producto: {this.state.id}
+                        Esta seguro que desea eliminar el producto id: {this.state.id}
                      </DialogContentText>
                       <TextField id="id" name="id" type="hidden" value={this.state.id} />                
                     </DialogContent>
@@ -308,8 +305,8 @@ class SimpleGridList extends React.Component {
     }
 }
 
-SimpleGridList.propTypes = {
+BrandsGridList.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleGridList);
+export default withStyles(styles)(BrandsGridList);
