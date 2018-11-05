@@ -53,6 +53,9 @@ class LoginForm extends React.Component {
     onLoginSubmitHandler = (event) => {
         event.preventDefault();
 
+        var url = `${process.env.REACT_APP_BACKEND_API}user/login`;
+
+        debugger;
         var user = this.state.user;
         var pass = this.state.password;
 
@@ -61,7 +64,7 @@ class LoginForm extends React.Component {
 
         axios({
             method: 'POST',
-            url: process.env.REACT_APP_BACKEND_API + 'user/login',
+            url: url,
             data: data
           })
         .then(res => {
