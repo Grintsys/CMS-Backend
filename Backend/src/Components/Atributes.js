@@ -18,7 +18,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
 
@@ -136,7 +135,7 @@ class SimpleGridList extends React.Component {
     
    axios({
        method: 'POST',
-       url: Config.API + 'productattribute/edit',
+       url: process.env.REACT_APP_BACKEND_API + 'productattribute/edit',
        data: data,
        config: { 
            headers: { 'Content-Type': 'multipart/form-data' }
@@ -166,7 +165,7 @@ class SimpleGridList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattribute/remove/${this.state.id}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}productattribute/remove/${this.state.id}`;
 
     axios.get(url)
     .then(res => {
@@ -188,14 +187,13 @@ class SimpleGridList extends React.Component {
   }
 
   getElementsList(){
-    console.log(`Call Api: ${Config.API}productattribute/all`);
-    fetch(Config.API+'productattribute/all')
+    console.log(`Call Api: ${process.env.REACT_APP_BACKEND_API}productattribute/all`);
+    fetch(process.env.REACT_APP_BACKEND_API+'productattribute/all')
     .then(result => {
         return result.json();
     })
     .then(data => {
         let elements = data.data.map((element) => {
-            const { classes } = this.props;
             let aId = element.ProductAttributeId;
             return (
                 <ListItem key={aId}>

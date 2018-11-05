@@ -241,7 +241,7 @@ class ProductList extends React.Component {
     
     axios({
         method: 'POST',
-        url: Config.API + 'product/edit',
+        url: process.env.REACT_APP_BACKEND_API + 'product/edit',
         data: data,
         config: { 
             headers: {'Content-Type': 'multipart/form-data' }
@@ -269,7 +269,7 @@ class ProductList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}product/remove/${this.state.ProductId}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}product/remove/${this.state.ProductId}`;
 
     axios.get(url)
     .then(res => {
@@ -289,7 +289,7 @@ class ProductList extends React.Component {
   }
 
   getBrandList = () => {
-    fetch(Config.API+'brand/all')
+    fetch(process.env.REACT_APP_BACKEND_API+'brand/all')
     .then(result => {
         return result.json();
     })
@@ -301,7 +301,7 @@ class ProductList extends React.Component {
   }
 
   getProductAttributesList = () => {
-    fetch(Config.API+'brand/all')
+    fetch(process.env.REACT_APP_BACKEND_API+'brand/all')
     .then(result => {
         return result.json();
     })
@@ -314,7 +314,7 @@ class ProductList extends React.Component {
 
   getProductList = () => {
     const { classes } = this.props;
-    fetch(Config.API+'product/all?limit=1000')
+    fetch(process.env.REACT_APP_BACKEND_API+'product/all?limit=1000')
     .then(result => {
         return result.json();
     })
@@ -325,7 +325,7 @@ class ProductList extends React.Component {
                 <Card key={p} className={classes.card}>
                     <CardMedia
                       className={classes.media}
-                      image={Config.API+product.ImageUrl}
+                      image={process.env.REACT_APP_BACKEND_API+product.ImageUrl}
                       title={product.Name}
                     />
                     <CardContent>
@@ -402,7 +402,6 @@ class ProductList extends React.Component {
                                       },
                                     }}
                                     helperText="Selecciona una marca"
-                                    margin="normal"
                                   >
                                     {this.state.brands.map(option => (
                                       <MenuItem key={option.BrandId} value={option.BrandId}>
@@ -428,7 +427,7 @@ class ProductList extends React.Component {
                     <form onSubmit={this.onClickEditSubmitHandler}>
                       <DialogContent> 
                         <TextField autoFocus margin="dense" required name="Name" label="Nombre" type="text" value={this.state.Name} onChange={this.handleInputChange} className={classes.textField} fullWidth />
-                        <TextField autoFocus margin="dense" required name="Description" margin="normal" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline className={classes.textField} fullWidth />     
+                        <TextField autoFocus margin="dense" required name="Description" label="Descripcion de producto" value={this.state.Description} onChange={this.handleInputChange} multiline className={classes.textField} fullWidth />     
                         <TextField autoFocus margin="dense" required name="Partnumber" label="No Parte" type="text" value={this.state.PartNumber} onChange={this.handleInputChange} className={classes.textField} fullWidth />
                         <TextField autoFocus margin="dense" required name="Qty" label="Cantidad" type="number"  value={this.state.Qty} onChange={this.handleInputChange} className={classes.textField} fullWidth />
                         <TextField autoFocus margin="dense" required name="Price" label="Precio" type="number" value={this.state.Price} onChange={this.handleInputChange} className={classes.textField} fullWidth />    
@@ -447,7 +446,6 @@ class ProductList extends React.Component {
                                       },
                                     }}
                                     helperText="Selecciona una marca"
-                                    margin="normal"
                                   >
                                     {this.state.brands.map(option => (
                                       <MenuItem key={option.BrandId} value={option.BrandId}>

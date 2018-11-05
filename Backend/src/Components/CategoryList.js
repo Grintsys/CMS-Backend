@@ -5,7 +5,6 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField';
@@ -67,7 +66,7 @@ function CategoriesRender(props){
         return null;
     }
 
-    if(categories.length == 0){
+    if(categories.length === 0){
         return null;
     }
     
@@ -102,7 +101,7 @@ function SubCategoriesRender(props){
         return null;
     }
 
-    if(subcategories.length == 0){
+    if(subcategories.length === 0){
         return null;
     }
 
@@ -174,7 +173,7 @@ class TitlebarGridList extends React.Component {
         
        axios({
            method: 'POST',
-           url: Config.API + 'category/edit',
+           url: process.env.REACT_APP_BACKEND_API + 'category/edit',
            data: data,
            config: { 
                headers: { 'Content-Type': 'multipart/form-data' }
@@ -211,7 +210,7 @@ class TitlebarGridList extends React.Component {
         
        axios({
            method: 'POST',
-           url: Config.API + 'category/add',
+           url: process.env.REACT_APP_BACKEND_API + 'category/add',
            data: data,
            config: { 
                headers: {'Content-Type': 'multipart/form-data' }
@@ -242,7 +241,7 @@ class TitlebarGridList extends React.Component {
     
         this.setState({ loading: true });
     
-        var url = `${Config.API}category/remove/${this.state.id}`;
+        var url = `${process.env.REACT_APP_BACKEND_API}category/remove/${this.state.id}`;
     
         axios.get(url)
         .then(res => {
@@ -314,7 +313,7 @@ class TitlebarGridList extends React.Component {
     }
 
     getCategoryList(){
-        var url = `${Config.API}category/all`;
+        var url = `${process.env.REACT_APP_BACKEND_API}category/all`;
         console.log(`Url API: ${url}`);
 
         fetch(url)
@@ -327,7 +326,7 @@ class TitlebarGridList extends React.Component {
     }
 
     getSubCategoryList(categoryId){
-        var url = `${Config.API}subcategory/category/${categoryId}`;
+        var url = `${process.env.REACT_APP_BACKEND_API}subcategory/category/${categoryId}`;
         console.log(`Url API: ${url}`);
 
         if(!categoryId){

@@ -192,7 +192,7 @@ class Covers extends React.Component {
 
         axios({
             method: 'POST',
-            url: Config.API + 'coverpage/edit',
+            url: process.env.REACT_APP_BACKEND_API + 'coverpage/edit',
             data: params
         })
         .then(res => {
@@ -216,7 +216,7 @@ class Covers extends React.Component {
 
     debugger;
 
-    var url = `${Config.API}coverpage/remove/${this.state.FrontCoverPageId}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}coverpage/remove/${this.state.FrontCoverPageId}`;
     //console.log(url);
     axios.get(url)
     .then(res => {
@@ -242,7 +242,7 @@ class Covers extends React.Component {
 
   getCoverList(){
     const { classes } = this.props;
-    fetch(Config.API+'coverpage/all')
+    fetch(process.env.REACT_APP_BACKEND_API+'coverpage/all')
     .then(result => {
         return result.json();
     })
@@ -253,7 +253,7 @@ class Covers extends React.Component {
               <Card key={key} className={classes.card}>
                 <CardMedia
                   className={classes.media}
-                  image={Config.API+cover.ImageUrl}
+                  image={process.env.REACT_APP_BACKEND_API+cover.ImageUrl}
                   title={cover.HeaderText}
                 />
                 <CardContent>

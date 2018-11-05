@@ -156,7 +156,7 @@ class ProductAttributesValuesGridList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattributevalue/remove/${this.state.id}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}productattributevalue/remove/${this.state.id}`;
 
     axios.get(url)
     .then(res => {
@@ -181,7 +181,7 @@ class ProductAttributesValuesGridList extends React.Component {
 
     const { id } = this.props.match.params;
 
-    var url = `${Config.API}productattributevalue/product/${id}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}productattributevalue/product/${id}`;
    
     console.log(`Call Api: ${url}`);
     
@@ -191,7 +191,6 @@ class ProductAttributesValuesGridList extends React.Component {
     })
     .then(data => {
         let elements = data.data.map((element) => {
-            const { classes } = this.props;
             return (
                 <ListItem key={element.ProductAttributeValueId}>
                   <ListItemText primary={`${element.Name}`} secondary={element.Value} />
@@ -208,7 +207,7 @@ class ProductAttributesValuesGridList extends React.Component {
   }
 
   getAttributeList(){
-    var url = `${Config.API}productattribute/all`;
+    var url = `${process.env.REACT_APP_BACKEND_API}productattribute/all`;
    
     console.log(`Call Api: ${url}`);
     
