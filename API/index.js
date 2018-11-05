@@ -2,17 +2,16 @@ var express = require('express'); // Web Framework
 var cors = require('cors');
 var app = express();
 var sql = require('mssql'); // MS Sql Server client
-//const fileUpload = require('express-fileupload');
 const uuidv4 = require('uuid/v4');
-//const fileUpload = require('express-fileupload');
-var bodyParser = require('body-parser')
+
+var bodyParser = require('body-parser');
+var dotenv = require('dotenv');
+const result = dotenv.config();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
-//app.use(fileUpload());
-//app.use('/upload', express.static(__dirname + '/upload'));
-//const fileUpload = require('express-fileupload');
+
 var multer  = require('multer')
 //var upload = multer({ dest: 'uploads/' })
 var storage = multer.diskStorage({
@@ -26,21 +25,20 @@ var storage = multer.diskStorage({
   
 var upload = multer({ storage: storage })
 var path = require('path')
-//app.use('/static', app.static(__dirname + '/uploads'))
-//app.use(express.static('public'));
+
 app.use('/', express.static(path.join(__dirname, 'uploads/')));
 
 //Configuraciona
 const sqlConfig = {
-    user: 'inplas',
-    password: 'inplas2018',
-    server: 'localhost',
-    database: 'inplas',
-    port: 1433,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    server: process.env.DB_SERVER,
+    database: process.env.DB_NAME,
+    port: parseInt(process.env.DB_PORT),
     debug: true,
     options: {
-        encrypt: false,
-        instanceName: 'SQLEXPRESS'
+        encrypt: true,
+        //instanceName: 'SQLEXPRESS'
     }
 };
 
@@ -49,7 +47,16 @@ function getExtension(filename) {
     return ext[ext.length - 1];
 }
 
-var server = app.listen(8090, function () {
+var server = app.listen(parseInt(process.env.APP_PORT), function () {
+
+    if (result.error) {
+      if (result.error.code === "ENOENT") {
+        console.info("expected this error because we are in production without a .env file")
+      } else {
+        throw result.error
+      }
+    }
+
     var host = server.address().address
     var port = server.address().port
 
