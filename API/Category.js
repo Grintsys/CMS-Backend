@@ -124,14 +124,14 @@ module.exports = (app, sql, sqlConfig, upload) => {
         new sql.ConnectionPool(sqlConfig).connect().then(pool => {
             return pool.query(`select * from dbo.Categories`)
         }).then(result => {
-             var data = {
+            var data = {
                success: true,
                message: '',
                data: result.recordset
             }
             res.send(data);
         }).catch(err => {
-            next(err);
+            res.send({ success: false, message: err });
         });
     })
 

@@ -26,9 +26,6 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage })
 
 app.use('/', express.static(path.join(__dirname, 'uploads/')));
-app.use(logError);
-app.use(clientErrorHandler);
-app.use(errorHandler);
 
 //Configuraciona
 const sqlConfig = {
@@ -44,23 +41,16 @@ const sqlConfig = {
     }
 };
 
-function logError(err, res, req, next){
-  console.log(err.stack);
-  next(err);
-}
+app.use(function (error, req, res, next) {
+  console.error(err.message);
+  if (!err.statusCode) err.statusCode = 500; // Sets a generic server error status code if none is part of the err
 
-function clientErrorHandler(err, req, res, next) {
-  if (req.xhr) {
-    res.status(500).send({ error: 'Something failed!' });
+  if (err.shouldRedirect) {
+    res.render('myErrorPage') // Renders a myErrorPage.html for the user
   } else {
-    next(err);
+    res.status(err.statusCode).send(err.message); // If shouldRedirect is not defined in our error, sends our original err data
   }
-}
-
-function errorHandler(err, req, res, next) {
-  res.status(500);
-  res.render('error', { error: err });
-}
+});
 
 function getExtension(filename) {
     var ext = path.extname(filename||'').split('.');
