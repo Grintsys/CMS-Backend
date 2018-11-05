@@ -9,7 +9,6 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import { MySnackbarContentWrapper } from './SnackBarCustom'
-import { Config } from './Config'
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar'
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -19,14 +18,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
 import MenuItem from '@material-ui/core/MenuItem'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from 'react-router-dom';
 import BackIcon from '@material-ui/icons/ArrowBack'
 
@@ -121,7 +118,7 @@ class ProductAttributesValuesGridList extends React.Component {
 
     const { id } = this.props.match.params;
 
-    var url = `${Config.API}productattributevalue/add/${id}.${this.state.attribute}.${this.state.value}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}productattributevalue/add/${id}.${this.state.attribute}.${this.state.value}`;
 
     debugger;
 

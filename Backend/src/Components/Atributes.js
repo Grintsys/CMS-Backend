@@ -9,7 +9,6 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import { MySnackbarContentWrapper } from './SnackBarCustom'
-import { Config } from './Config'
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar'
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -101,7 +100,7 @@ class SimpleGridList extends React.Component {
 
     this.setState({ loading: true });
 
-    var url = `${Config.API}productattribute/add/${this.state.name}`;
+    var url = `${process.env.REACT_APP_BACKEND_API}productattribute/add/${this.state.name}`;
 
     axios.get(url)
     .then(res => {

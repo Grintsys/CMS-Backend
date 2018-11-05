@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
-import { Config } from './Config'
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -76,7 +75,7 @@ function CategoriesRender(props){
         let cId = category.CategoryId;
         return (
             <GridListTile key={cId}>
-                <img src={Config.API+category.ImageUrl}
+                <img src={process.env.REACT_APP_BACKEND_API+category.ImageUrl}
                      alt={category.Name} 
                      className={classes.gridItemImage} />
                 <GridListTileBar onClick={() => props.clicked(cId)}

@@ -15,10 +15,7 @@ import CategoryList from '@material-ui/icons/FormatListBulleted'
 import CoverList from '@material-ui/icons/ImageAspectRatio'
 import FavIcon from '@material-ui/icons/Favorite'
 import ProductList from '@material-ui/icons/FileUpload'
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
 import StarIcon from '@material-ui/icons/Star';
-import SendIcon from '@material-ui/icons/Send';
 import Categories from './CategoryList'
 import Products from './Products'
 import ProductAtributes from './Atributes'
@@ -26,7 +23,6 @@ import Covers from './Covers'
 import Brands from './Brands'
 import { Redirect } from 'react-router-dom';
 
-import Paper from '@material-ui/core/Paper';
 const styles = theme => ({
   root: {
     flexGrow: 1,

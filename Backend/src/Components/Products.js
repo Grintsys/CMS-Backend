@@ -7,13 +7,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
 import EditIcon from '@material-ui/icons/Edit'
 import ListIcon from '@material-ui/icons/List';
-import { Config } from './Config'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -200,7 +197,7 @@ class ProductList extends React.Component {
     
     axios({
         method: 'POST',
-        url: Config.API + 'product/add',
+        url: process.env.REACT_APP_BACKEND_API + 'product/add',
         data: data,
         config: { 
             headers: {'Content-Type': 'multipart/form-data' }

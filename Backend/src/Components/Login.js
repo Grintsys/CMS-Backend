@@ -15,8 +15,6 @@ import Button from '@material-ui/core/Button'
 import { Redirect } from  'react-router-dom';
 import { MySnackbarContentWrapper } from './SnackBarCustom'
 import Snackbar from '@material-ui/core/Snackbar'
-
-import { Config } from './Config'
 import axios from 'axios';
 
 const styles = theme => ({
@@ -63,7 +61,7 @@ class LoginForm extends React.Component {
 
         axios({
             method: 'POST',
-            url: Config.API + 'user/login',
+            url: process.env.REACT_APP_BACKEND_API + 'user/login',
             data: data
           })
         .then(res => {
