@@ -94,7 +94,7 @@ module.exports = function(app, sql, sqlConfig){
     })
 
     app.get('/company/all', function(req, res){
-        console.log(`${new Date()}: get all categories`);
+        console.log(`${new Date()}: get all companies`);
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
 
@@ -102,7 +102,7 @@ module.exports = function(app, sql, sqlConfig){
 
                 var request = pool.request();
                 
-                var queryText = `select * from dbo.Categories`;
+                var queryText = `select * from Companies`;
 
                 request.query(queryText, (err, recordset) => {
                             if(err) console.log(err);
