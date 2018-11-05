@@ -2,18 +2,18 @@ var express = require('express'); // Web Framework
 var cors = require('cors');
 var app = express();
 var sql = require('mssql'); // MS Sql Server client
-const uuidv4 = require('uuid/v4');
+var path = require('path'); //library to handle extensions
+//const uuidv4 = require('uuid/v4');
 
 var bodyParser = require('body-parser');
 var dotenv = require('dotenv');
 const result = dotenv.config();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
 
 var multer  = require('multer')
-//var upload = multer({ dest: 'uploads/' })
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'uploads/')
@@ -24,9 +24,11 @@ var storage = multer.diskStorage({
   })
   
 var upload = multer({ storage: storage })
-var path = require('path')
 
 app.use('/', express.static(path.join(__dirname, 'uploads/')));
+app.use(logError);
+app.use(clientErrorHandler);
+app.use(errorHandler);
 
 //Configuraciona
 const sqlConfig = {
@@ -41,6 +43,24 @@ const sqlConfig = {
         //instanceName: 'SQLEXPRESS'
     }
 };
+
+function logError(err, res, req, next){
+  console.log(err.stack);
+  next(err);
+}
+
+function clientErrorHandler(err, req, res, next) {
+  if (req.xhr) {
+    res.status(500).send({ error: 'Something failed!' });
+  } else {
+    next(err);
+  }
+}
+
+function errorHandler(err, req, res, next) {
+  res.status(500);
+  res.render('error', { error: err });
+}
 
 function getExtension(filename) {
     var ext = path.extname(filename||'').split('.');
@@ -63,17 +83,6 @@ var server = app.listen(parseInt(process.env.APP_PORT), function () {
     console.log("inplas API listening at http://%s:%s", host, port)
 });
 
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-  
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
-
-
 require("./Category")(app, sql, sqlConfig, upload);
 require("./Product")(app, sql, sqlConfig, upload);
 require("./SubCategory")(app, sql, sqlConfig);
@@ -83,15 +92,3 @@ require("./ProductAttributesValue")(app, sql, sqlConfig);
 require("./Company")(app, sql, sqlConfig);
 require("./CoverPage")(app, sql, sqlConfig, upload);
 require("./User")(app, sql, sqlConfig);
-
-process.on('SIGINT', () => {
-    console.info('SIGINT signal received.')
-  
-    // Stops the server from accepting new connections and finishes existing connections.
-    server.close(function(err) {
-      if (err) {
-        console.error(err)
-        process.exit(1)
-      }
-    })
-  })

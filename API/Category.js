@@ -1,9 +1,8 @@
-module.exports = function(app, sql, sqlConfig, upload){
+module.exports = (app, sql, sqlConfig, upload) => {
 
-    app.post('/category/add', upload.single('file'), function (req, res, next) {
+    app.post('/category/add', upload.single('file'), (req, res, next) => {
 
-        const pool = new sql.ConnectionPool(sqlConfig, err => {
-                if(err) console.log(err);
+        const pool = new sql.ConnectionPool(sqlConfig, function(){
 
                 var name = req.body.name;
                 var file = req.file.filename;
@@ -21,24 +20,19 @@ module.exports = function(app, sql, sqlConfig, upload){
 
                 var request = pool.request();
                 
-                    request.query(queryText, (err, recordset) => {
-                            if(err) console.log(err);
+                request.query(queryText);
 
-                            var data = {
-                                success: true,
-                                message: 'category added',
-                                category: name,
-                                image: file,
-                                rowsAffected: recordset.rowsAffected
-                            }
-
-                            res.send(data);
-                    })
-        });
-        
-        pool.on('error', err => {
-            res.send({error: err, success:false});
-        });
+                request.on('done', result => {
+                        var data = {
+                            success: true,
+                            message: 'category added',
+                            category: name,
+                            image: file,
+                            rowsAffected: result.rowsAffected
+                        }
+                        res.send(data);
+                })
+        })
     });
 
     app.get('/category/remove/:id', function(req, res){
@@ -80,7 +74,7 @@ module.exports = function(app, sql, sqlConfig, upload){
         });
     })
 
-    app.post('/category/edit', upload.single('file'), function (req, res, next) {
+    app.post('/category/edit', upload.single('file'), function (req, res) {
 
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
@@ -124,32 +118,20 @@ module.exports = function(app, sql, sqlConfig, upload){
         });
     });
 
-    app.get('/category/all', function(req, res){
+    app.get('/category/all', function(req, res, next){
         console.log(`${new Date()}: get all categories`);
-        const pool = new sql.ConnectionPool(sqlConfig, err => {
-                if(err) console.log(err);
 
-                var category = req.params.categoryId;
-
-                var request = pool.request();
-                
-                var queryText = `select * from dbo.Categories`;
-
-                request.query(queryText, (err, recordset) => {
-                            if(err) console.log(err);
-
-                            var data = {
-                                success: true,
-                                message: '',
-                                data: recordset.recordset
-                            }
-
-                            res.send(data);
-                })
-        });
-        
-        pool.on('error', err => {
-            res.send({error: err, success:false});
+        new sql.ConnectionPool(sqlConfig).connect().then(pool => {
+            return pool.query(`select * from dbo.Categories`)
+        }).then(result => {
+             var data = {
+               success: true,
+               message: '',
+               data: result.recordset
+            }
+            res.send(data);
+        }).catch(err => {
+            next(err);
         });
     })
 
