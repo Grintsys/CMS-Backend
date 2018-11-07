@@ -70,7 +70,8 @@ var server = app.listen(parseInt(process.env.APP_PORT), function () {
     var host = server.address().address
     var port = server.address().port
 
-    console.log("inplas API listening at http://%s:%s", host, port)
+    console.log("inplas API listening at http://%s:%s", host, port);
+    console.log(result.parsed);
 });
 
 require("./Category")(app, sql, sqlConfig, upload);
