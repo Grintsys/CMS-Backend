@@ -61,8 +61,53 @@ module.exports = function(app, sql, sqlConfig){
         });
     })
 
-    app.get('/company/update/:id.:name', function(req, res){
-        console.log('call to api/company/update');
+    app.post('/company/:id/edit', function(req, res){
+        console.log('call to api/company/edit');
+
+        var id = req.params.id;
+        var name = req.body.name;
+        var rtn = req.body.rtn;
+        var email = req.body.email;
+
+        var attributes = '';
+
+        if(!name){
+            res.status(401).send({ message: 'missing name parameter'});
+        }
+
+        if(rtn){
+            attributes += `, [RTN] = ${rtn}`;
+        }
+
+        if(email){
+            attributes += `, [Email] = ${email}`;
+        }
+
+        var queryText = `update [dbo].[Company]
+                                set [Name] = '${name}' 
+                                ${attributes}
+                        where  [dbo].[Company].[companyId] = '${id}'`;
+
+        new sql.ConnectionPool(sqlConfig).connect().then(pool => {
+            return pool.query(queryText)
+        }).then(phones => {
+            phoneslist = phones.recordset;
+
+            var data = {
+                success: true,
+                message: '',
+                data: {
+                    company: result.recordset,
+                    addesses: addresslist,
+                    phones: phoneslist,
+                }
+             }
+             res.send(data);
+        }).catch(err => {
+            res.send({ success: false, message: err });
+        });
+
+
         const pool = new sql.ConnectionPool(sqlConfig, err => {
                 if(err) console.log(err);
 
@@ -126,6 +171,7 @@ module.exports = function(app, sql, sqlConfig){
         console.log(`${new Date()}: get a company`);
 
         let addresslist = [];
+        let phoneslist = [];
 
         let id = req.params.id;
 
@@ -141,21 +187,35 @@ module.exports = function(app, sql, sqlConfig){
             }
             new sql.ConnectionPool(sqlConfig).connect().then(pool => {
                 return pool.query(`select * from [dbo].[CompanyAddress] where CompanyId = ${id}`)
-            }).then(result => {
-                addresslist = result.recordset;
+            }).then(address => {
+                addresslist = address.recordset;
+
+                new sql.ConnectionPool(sqlConfig).connect().then(pool => {
+                    return pool.query(`  SELECT a.CompanyId,
+                                                a.Phone,
+                                                b.[Name] [Type]
+                                        FROM [dbo].[CompanyPhones] a
+                                                inner join [dbo].[PhoneTypes] b on a.PhoneTypeId = b.PhoneTypeId
+                                                where a.CompanyId = ${id}`)
+                }).then(phones => {
+                    phoneslist = phones.recordset;
+    
+                    var data = {
+                        success: true,
+                        message: '',
+                        data: {
+                            company: result.recordset,
+                            addesses: addresslist,
+                            phones: phoneslist,
+                        }
+                     }
+                     res.send(data);
+                }).catch(err => {
+                    res.send({ success: false, message: err });
+                });
             }).catch(err => {
                 res.send({ success: false, message: err });
             });
-
-            var data = {
-               success: true,
-               message: '',
-               data: {
-                   company: result.recordset,
-                   addesses: addresslist
-               }
-            }
-            res.send(data);
         }).catch(err => {
             res.send({ success: false, message: err });
         });

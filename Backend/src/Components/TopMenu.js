@@ -12,10 +12,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import CategoryList from '@material-ui/icons/FormatListBulleted'
+import Information from '@material-ui/icons/Inbox'
 import CoverList from '@material-ui/icons/ImageAspectRatio'
 import FavIcon from '@material-ui/icons/Favorite'
 import ProductList from '@material-ui/icons/FileUpload'
 import StarIcon from '@material-ui/icons/Star';
+import Company from './Company'
 import Categories from './CategoryList'
 import Products from './Products'
 import ProductAtributes from './Atributes'
@@ -90,6 +92,12 @@ class ClippedDrawer extends Component {
     })
   }
 
+  handleCompanyClick = () => {
+    this.setState({
+      content: <Company />
+    })
+  }
+
   handleProductAttributesClick = () => {
     this.setState({
       content: <ProductAtributes />
@@ -129,6 +137,12 @@ class ClippedDrawer extends Component {
         >
           <div className={classes.toolbar} />
           <List>
+          <ListItem button onClick={this.handleCompanyClick}>
+              <ListItemIcon>
+                <Information />
+              </ListItemIcon>
+              <ListItemText primary="Company" />
+            </ListItem>
             <ListItem button onClick={this.handleCategoryClick}>
               <ListItemIcon>
                 <CategoryList />
