@@ -124,30 +124,40 @@ module.exports = function(app, sql, sqlConfig){
 
     app.get('/company/:id', function(req, res){
         console.log(`${new Date()}: get a company`);
-        const pool = new sql.ConnectionPool(sqlConfig, err => {
-                if(err) console.log(err);
 
-                var id = req.params.id;
+        let addresslist = [];
 
-                var request = pool.request();
-                
-                var queryText = `select * from dbo.Categories where companyId = ${id}`;
+        let id = req.params.id;
 
-                request.query(queryText, (err, recordset) => {
-                            if(err) console.log(err);
+        if(!id){
+            res.status(401).send({ success: false, message: 'error no id is specified'});
+        }
 
-                            var data = {
-                                success: true,
-                                message: '',
-                                data: recordset.recordset
-                            }
+        new sql.ConnectionPool(sqlConfig).connect().then(pool => {
+            return pool.query(`select top 1 * from [dbo].[Company] where CompanyId = ${id}`)
+        }).then(result => {
+            if(result.recordset.length == 0){
+                res.status(401).send({ success: false, message: 'error no record found'});
+            }
+            new sql.ConnectionPool(sqlConfig).connect().then(pool => {
+                return pool.query(`select * from [dbo].[CompanyAddress] where CompanyId = ${id}`)
+            }).then(result => {
+                addresslist = result.recordset;
+            }).catch(err => {
+                res.send({ success: false, message: err });
+            });
 
-                            res.send(data);
-                })
-        });
-        
-        pool.on('error', err => {
-            res.send({error: err, success:false});
+            var data = {
+               success: true,
+               message: '',
+               data: {
+                   company: result.recordset,
+                   addesses: addresslist
+               }
+            }
+            res.send(data);
+        }).catch(err => {
+            res.send({ success: false, message: err });
         });
     })
 }
