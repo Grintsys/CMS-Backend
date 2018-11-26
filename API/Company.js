@@ -86,7 +86,7 @@ module.exports = function(app, sql, sqlConfig){
         var queryText = `update [dbo].[Company]
                                 set [Name] = '${name}' 
                                 ${attributes}
-                        where  [dbo].[Company].[companyId] = '${id}'`;
+                        where [dbo].[Company].[companyId] = '${id}'`;
 
         new sql.ConnectionPool(sqlConfig).connect().then(pool => {
             return pool.query(queryText)
