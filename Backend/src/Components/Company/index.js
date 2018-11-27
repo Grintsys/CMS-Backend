@@ -11,7 +11,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
-
+import Divider from '@material-ui/core/Divider';
+import Address from './Address';
+import Phones from './Phones';
 
 const styles = theme => ({
   root: {
@@ -33,18 +35,25 @@ class Company extends React.Component {
           remove: false,
           success: false,
           loading: false,
+          tel_principal: '',
+          tel_secundario: '',
+          tel_alterno: '',
+          address1: '',
+          address2: '',
           message: '',
           name: '',
           id: 1, //TODO: fix this eventually
           rtn: '',
           email: '',
+          addresses: [],
+          phones: [],
           openMessage: false,
       }
   }
 
   handleChange = name => event => {
 
-    debugger;
+    //debugger;
     this.setState({
       [name]: event.target.value,
     });
@@ -58,7 +67,11 @@ class Company extends React.Component {
     var data = new FormData();
     data.append('name', this.state.name);
     data.append('rtn', this.state.rtn);
-    data.append('email', this.state.email);
+    data.append('tel_principal', this.state.tel_principal);
+    data.append('tel_secundario', this.state.tel_secundario);
+    data.append('tel_alterno', this.state.tel_alterno);
+    data.append('address1', this.state.address1);
+    data.append('address2', this.state.address2);
 
     var url = `${process.env.REACT_APP_BACKEND_API} + 'company/${this.state.id}/edit',`
     
@@ -84,14 +97,14 @@ class Company extends React.Component {
               email: '',
           });
 
-          this.getElementsList();
+          this.getCompany();
     })
     .catch(function (error) {
           console.log(error);
     });
 }
 
-  getElementsList(){
+  getCompany(){
 
     this.setState({ loading: true });
 
@@ -104,20 +117,74 @@ class Company extends React.Component {
         return result.json();
     })
     .then(data => {
-        var company = data.data.company[0];
+        var company = data.data;
         this.setState(
-          { 
+        { 
             name: company.Name,
             email: company.Email,
-            rtn: company.RTN,    
+            rtn: company.RTN,
+            loading: false,      
+        })
+    })
+  }
+
+  getCompanyAddress(){
+
+    this.setState({ loading: true });
+
+    var id = this.state.id;
+    var url = `${process.env.REACT_APP_BACKEND_API}company/${id}/address`;
+    
+    console.log(`Call Api: ${url}`);
+    fetch(url)
+    .then(result => {
+        return result.json();
+    })
+    .then(data => {
+        this.setState(
+          {  
+            addresses: data.data,
+            loading: false,      
+          })
+    })
+  }
+
+  getCompanyPhones(){
+
+    this.setState({ loading: true });
+
+    var id = this.state.id;
+    var url = `${process.env.REACT_APP_BACKEND_API}company/${id}/phones`;
+    
+    console.log(`Call Api: ${url}`);
+    fetch(url)
+    .then(result => {
+        return result.json();
+    })
+    .then(data => {
+        this.setState(
+          {  
+            phones: data.data,
             loading: false,      
           })
     })
   }
 
   componentDidMount() {
-    this.getElementsList();
+    this.getCompany();
+    this.getCompanyAddress();
+    this.getCompanyPhones();
   }
+
+  /*
+  
+   <TextField margin="dense" id="tel_principal" name="tel_principal" value={this.state.tel_principal} onChange={this.handleChange('tel_principal')} label="Tel principal" type="text" fullWidth />  
+                    <TextField margin="dense" id="tel_secundario" name="tel_secundario" value={this.state.tel_secundario} onChange={this.handleChange('tel_secundario')} label="Tel Secundario" type="text" fullWidth />  
+                    <TextField margin="dense" id="tel_alterno" name="tel_alterno" value={this.state.tel_alterno} onChange={this.handleChange('tel_alterno')} label="Tel Alterno" type="text" fullWidth />  
+                    <TextField margin="dense" id="address1" name="address1" value={this.state.address1} onChange={this.handleChange('address1')} label="Direccion 1" type="text" fullWidth />  
+                    <TextField margin="dense" id="address2" name="address2" value={this.state.address2} onChange={this.handleChange('address2')} label="Direccion 2" type="text" fullWidth />  
+  
+  */
   
   render(){
     const { loading } = this.state;
@@ -130,21 +197,21 @@ class Company extends React.Component {
               <form onSubmit={this.onClickEditSubmitHandler}>
                   <DialogContent>     
                     <TextField id="id" name="id" type="hidden" value={this.state.id} />                                   
-                    <TextField autoFocus margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleChange} label="Nombre" type="text" fullWidth />
-                    <TextField autoFocus margin="dense" id="email" name="email" value={this.state.email} onChange={this.handleChange} label="Email" type="text" fullWidth />
-                    <TextField autoFocus margin="dense" id="rtn" name="rtn" value={this.state.rtn} onChange={this.handleChange} label="RTN" type="text" fullWidth />  
-                    <TextField autoFocus margin="dense" id="tel" name="tel" value={this.state.rtn} onChange={this.handleChange} label="tel" type="text" fullWidth />  
-                    <TextField autoFocus margin="dense" id="tel2" name="tel2" value={this.state.rtn} onChange={this.handleChange} label="tel2" type="text" fullWidth />  
-                    <TextField autoFocus margin="dense" id="address" name="address" value={this.state.rtn} onChange={this.handleChange} label="Direccion 1" type="text" fullWidth />  
-                    <TextField autoFocus margin="dense" id="address2" name="address2" value={this.state.rtn} onChange={this.handleChange} label="Direccion 2" type="text" fullWidth />  
+                    <TextField margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleChange('name')} label="Nombre" type="text" fullWidth />
+                    <TextField margin="dense" id="email" name="email" value={this.state.email} onChange={this.handleChange('email')} label="Email" type="text" fullWidth />
+                    <TextField margin="dense" id="rtn" name="rtn" value={this.state.rtn} onChange={this.handleChange('rtn')} label="RTN" type="text" fullWidth />  
                   </DialogContent>
                     {loading && <LinearProgress />}
+                  <Divider />
                   <DialogActions>
                       <Button type="submit" color="primary">Salvar</Button>
                   </DialogActions>
               </form>
             </Typography>
           </Paper>
+
+          <Address state={this.state} classes={classes} />
+          <Phones state={this.state} classes={classes} />
         </div>
          <div>
              <Snackbar
