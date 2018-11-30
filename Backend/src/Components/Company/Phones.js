@@ -19,10 +19,7 @@ function Phones(props)
 
     return(
         <Paper className={classes.root} elevation={1}>
-            <Grid item xs={12} md={6}>
-                <Typography variant="h6" className={classes.title}>
-                    Telefonos
-                </Typography>
+            <Grid item xs={12} md={12}>
                 <div className={classes.demo}>
                 <List dense={true}>
                     {state.phones.map(row => {

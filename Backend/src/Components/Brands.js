@@ -20,6 +20,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete'
+import Grid from '@material-ui/core/Grid';
 
 
 const styles = theme => ({
@@ -216,14 +217,15 @@ class BrandsGridList extends React.Component {
     const { loading } = this.state;
     const { classes } = this.props;
     return ( 
-      <div className={classes.root}>
-         
-          <List className={classes.listSection}
-                component="nav"
-                subheader={<ListSubheader component="div">Lista de marcas</ListSubheader>}
-            >
-            {this.state.elements}
-          </List>
+      <div className={classes.root}>        
+         <Grid item xs={12} md={6}>
+            <List className={classes.listSection}
+                  component="nav"
+                  subheader={<ListSubheader component="div">Lista de marcas</ListSubheader>}
+              >
+              {this.state.elements}
+            </List>
+          </Grid>
 
             <Button variant="fab" color="primary" aria-label="Add" className={classes.fab} onClick={this.onClickAddHandler}>
               <AddIcon />

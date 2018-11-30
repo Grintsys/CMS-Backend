@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Address from './Address';
 import Phones from './Phones';
+import Tabs from './Tabs'
 
 const styles = theme => ({
   root: {
@@ -187,51 +188,33 @@ class Company extends React.Component {
   */
   
   render(){
-    const { loading } = this.state;
     const { classes } = this.props;
     return ( 
-      <div className={classes.root}>    
-         <div>
-          <Paper className={classes.root} elevation={1}>
-            <Typography component="p">
-              <form onSubmit={this.onClickEditSubmitHandler}>
-                  <DialogContent>     
-                    <TextField id="id" name="id" type="hidden" value={this.state.id} />                                   
-                    <TextField margin="dense" id="name" name="name" value={this.state.name} onChange={this.handleChange('name')} label="Nombre" type="text" fullWidth />
-                    <TextField margin="dense" id="email" name="email" value={this.state.email} onChange={this.handleChange('email')} label="Email" type="text" fullWidth />
-                    <TextField margin="dense" id="rtn" name="rtn" value={this.state.rtn} onChange={this.handleChange('rtn')} label="RTN" type="text" fullWidth />  
-                  </DialogContent>
-                    {loading && <LinearProgress />}
-                  <Divider />
-                  <DialogActions>
-                      <Button type="submit" color="primary">Salvar</Button>
-                  </DialogActions>
-              </form>
-            </Typography>
-          </Paper>
-
-          <Address state={this.state} classes={classes} />
-          <Phones state={this.state} classes={classes} />
+        <div className={classes.root}>    
+            <Tabs state={this.state} 
+              classes={classes} 
+              handleChange={this.handleChange} 
+              onClickEditSubmitHandler={this.onClickEditSubmitHandler}
+              props={this.props}
+              />
+            <div>
+              <Snackbar
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  open={this.state.openMessage}
+                  autoHideDuration={6000}
+                  onClose={this.onClickCloseHandle}>
+              <MySnackbarContentWrapper
+                  onClose={this.onClickCloseHandle}
+                  variant={!this.state.success ? "error" : "success" }
+                  message={this.state.message} />
+              </Snackbar>
+            </div>
         </div>
-         <div>
-             <Snackbar
-                 anchorOrigin={{
-                 vertical: 'bottom',
-                 horizontal: 'left',
-                 }}
-                 open={this.state.openMessage}
-                 autoHideDuration={6000}
-                 onClose={this.onClickCloseHandle}>
-             <MySnackbarContentWrapper
-                 onClose={this.onClickCloseHandle}
-                 variant={!this.state.success ? "error" : "success" }
-                 message={this.state.message}
-             />
-            </Snackbar>
-          </div>
-      </div>
-        );
-    }
+    );
+  }
 }
 
 Company.propTypes = {

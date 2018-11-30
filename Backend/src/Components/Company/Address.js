@@ -19,10 +19,7 @@ function Addresses(props)
 
     return(
         <Paper className={classes.root} elevation={1}>
-            <Grid item xs={12} md={6}>
-                <Typography variant="h6" className={classes.title}>
-                Direcciones
-                </Typography>
+            <Grid item xs={12} md={12}>
                 <div className={classes.demo}>
                 <List dense={true}>
                     {state.addresses.map(row => {
